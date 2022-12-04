@@ -24,6 +24,7 @@ Route::post('/server-management/add', [MainController::class, 'servermanagement_
 Route::post('/server-management/delete', [MainController::class, 'servermanagement_delete'])->middleware('auth');
 Route::get('/server-management/console/{id}', [MainController::class, 'servermanagement_console'])->middleware('auth');
 Route::get('/server-management/console-update', [MainController::class, 'servermanagement_console_update'])->middleware('auth');
+Route::post('/server-management/console-runcommand', [MainController::class, 'servermanagement_console_runcommand'])->middleware('auth');
 Route::get('/server-management/players/{id}', [MainController::class, 'servermanagement_players'])->middleware('auth');
 Route::get('/server-management/lua/{id}', [MainController::class, 'servermanagement_lua'])->middleware('auth');
 Route::get('/server-management/errors/{id}', [MainController::class, 'servermanagement_errors'])->middleware('auth');

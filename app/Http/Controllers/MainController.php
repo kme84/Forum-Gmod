@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use App\Models\ServerError;
+use App\Models\ServerCommand;
 use App\Models\ServerControl;
 use App\Models\Servers;
 use App\Models\Chapters;
@@ -82,22 +84,71 @@ class MainController extends Controller
     }
     public function servermanagement_console_receive(Request $request)
     {
-        $newfile = $request->newfile;
-        $log = $request->log;
-        if ($newfile === "true")
+        // $valid = $request->validate([
+        //     'port' => 'required|min:3|max:6',
+        //     'newfile' => 'required|min:1|max:5',
+        //     'log' => 'required',
+        // ]);
+        $ip = $request->ip();
+        $port = $request->port;
+        $server = ServerControl::where('ipport', '=', $ip.':'.$port)->firstOrFail();
+        Storage::disk('local')->makeDirectory($server->id);
+        if ($request->newfile === "true")
         {
-            Storage::disk('local')->put('serverlogs.txt', $log);
+            Storage::disk('local')->put($server->id.'/serverlogs.txt', $request->log);
         }
         else
         {
-            Storage::disk('local')->append('serverlogs.txt', $log);
+            Storage::disk('local')->append($server->id.'/serverlogs.txt', $request->log);
         }
-        return response('received', 200)
-        ->header('Content-Type', 'text/plain');
+
+        Storage::disk('local')->put($server->id.'/players.txt', $request->players);
+        $errors = json_decode($request->errors, true);
+        foreach($errors as $realm=>$error_array)
+        {
+            foreach ($error_array as $error_stack=>$error_count)
+            {
+                $error = ServerError::where('server_id', '=', $server->id)->where('error', '=', $error_stack)->first();
+                if (!$error)
+                {
+                    $error = new ServerError();
+                    $error->server_id = $server->id;
+                    $error->error = $error_stack;
+                    $error->count = $error_count;
+                    $error->realm = $realm;
+                    $error->save();
+                }
+                else
+                {
+                    $error->count += $error_count;
+                    $error->save();
+                }
+            }
+        }
+        
+        $commands = ServerCommand::where('server_id', '=', $server->id)->get();
+
+        $commands_array = $commands ? $commands->toArray() : [];
+
+        foreach($commands as $command)
+        {
+            $command->delete();
+        }
+
+        return $commands_array;
     }
     public function servermanagement_console_update(Request $request)
     {
-        $path = Storage::disk('local')->path('serverlogs.txt');
+        $valid = $request->validate([
+            'id' => 'required|min:1|max:8',
+            'tell' => 'required|min:1|max:20',
+        ]);
+        $id = $request->id;
+        if (Storage::disk('local')->missing($id.'/serverlogs.txt'))
+        {
+            return ['rows' => "", 'tell' => 0];
+        }
+        $path = Storage::disk('local')->path($id.'/serverlogs.txt');
         $fp = fopen($path, "r");
         if ($request->tell > filesize($path))
         {
@@ -117,10 +168,45 @@ class MainController extends Controller
         $rows = $rows ? $rows : '';
         return ['rows' => $rows, 'tell' => $tell];
     }
+    public function servermanagement_console_runcommand(Request $request)
+    {
+        $valid = $request->validate([
+            'id' => 'required',
+            'type' => 'required|min:1|max:20',
+            'command' => 'required',
+        ]);
+
+        $server = ServerControl::findOrFail($request->input('id'));
+        $command = new ServerCommand();
+        $command->server_id = $server->id;
+        $command->type = $request->input('type');;
+        $command->command = $request->input('command');
+        $command->save();
+        return response('', 200)
+        ->header('Content-Type', 'text/plain');
+    }
     public function servermanagement_players($id)
     {
         $server = ServerControl::findOrFail($id);
-        return view('server-management/players', ['server' => $server, 'results' => User::all()]);
+        $players = Storage::disk('local')->get($id.'/players.txt');
+        $players = json_decode($players, true);
+        $steamids = '';
+        foreach($players as $steamid=>$player)
+        {
+            $steamids .= $steamid . ',';
+        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=A86A2797CC650D04D91E9B5F17880143&format=json&steamids=".$steamids);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        $players_full = json_decode($output, true)['response']['players'];
+        foreach($players_full as &$player)
+        {
+            $player = array_merge($player, $players[$player['steamid']]);
+        }
+
+        return view('server-management/players', ['server' => $server, 'players' => $players_full]);
     }
     public function servermanagement_lua($id)
     {
@@ -130,7 +216,8 @@ class MainController extends Controller
     public function servermanagement_errors($id)
     {
         $server = ServerControl::findOrFail($id);
-        return view('server-management/errors', ['server' => $server]);
+        $errors = ServerError::where('server_id', '=', $server->id)->get();
+        return view('server-management/errors', ['server' => $server, 'errors' => $errors]);
     }
     public function profile_edit()
     {

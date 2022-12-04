@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('server_controls', function (Blueprint $table) {
+        Schema::create('server_commands', function (Blueprint $table) {
             $table->id();
-            $table->string('ipport')->unique();
-            $table->string('gamemode');
+            $table->string('server_id');
+            $table->text('command');
+            $table->string('type');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('server_controls');
+        Schema::dropIfExists('server_commands');
     }
 };
