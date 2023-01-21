@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\ForumController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServerManagementController;
 use App\Http\Controllers\ControlPanelController;
 
 /*
@@ -15,33 +18,15 @@ use App\Http\Controllers\ControlPanelController;
 |
 */
 
-Route::get('/', [MainController::class, 'main']);
-Route::get('/forum', [MainController::class, 'forum']);
-Route::get('/users', [MainController::class, 'users']);
-//Route::get('/control-panel/{option}', [MainController::class, 'controlpanel'])->middleware('auth');
-Route::get('/server-management', [MainController::class, 'servermanagement'])->middleware('auth');
-Route::post('/server-management/add', [MainController::class, 'servermanagement_add'])->middleware('auth');
-Route::post('/server-management/delete', [MainController::class, 'servermanagement_delete'])->middleware('auth');
-Route::get('/server-management/console/{id}', [MainController::class, 'servermanagement_console'])->middleware('auth');
-Route::get('/server-management/console-update', [MainController::class, 'servermanagement_console_update'])->middleware('auth');
-Route::post('/server-management/console-runcommand', [MainController::class, 'servermanagement_console_runcommand'])->middleware('auth');
-Route::get('/server-management/players/{id}', [MainController::class, 'servermanagement_players'])->middleware('auth');
-Route::get('/server-management/lua/{id}', [MainController::class, 'servermanagement_lua'])->middleware('auth');
-Route::get('/server-management/errors/{id}', [MainController::class, 'servermanagement_errors'])->middleware('auth');
-Route::get('/profile/edit', [MainController::class, 'profile_edit'])->middleware('auth');
-Route::post('/profile/edit/public', [MainController::class, 'profile_edit_public'])->middleware('auth');
-Route::post('/profile/edit/private', [MainController::class, 'profile_edit_private'])->middleware('auth');
-Route::post('/profile/edit/password', [MainController::class, 'profile_edit_password'])->middleware('auth');
-Route::get('/profile/{id}', [MainController::class, 'profile'])->middleware(['auth', 'rights:1']);
-
-Route::controller(ControlPanelController::class)->group(function()
+Route::controller(MainController::class)->group(function()
 {
-    Route::get('/control-panel', 'statistics');
-    Route::get('/control-panel/statistics', 'statistics');
-    Route::get('/control-panel/servers', 'servers');
-    Route::post('/control-panel/servers/add', 'servers_add');
-    Route::post('/control-panel/servers/delete', 'servers_delete');
+    Route::get('/', 'main');
+    Route::get('/users', 'users')->middleware(['auth']);
+});
 
+Route::controller(ForumController::class)->group(function()
+{
+    Route::get('/forum', 'forum');
     Route::post('/forum/addchapter', 'forum_addchapter');
     Route::post('/forum/deletechapter', 'forum_deletechapter');
     Route::post('/forum/addtopic', 'forum_addtopic');
@@ -55,8 +40,41 @@ Route::controller(ControlPanelController::class)->group(function()
     Route::post('/editor/image_upload', 'editor_image_upload')->name('upload');
 });
 
-Route::get('/user/{id}/{name}', function ($id, $name) {
-    return "ID ". $id . " NAME " . $name;
+Route::controller(ProfileController::class)->group(function()
+{
+    Route::get('/profile/edit', 'profile_edit');
+    Route::get('/profile/edit/public', 'profile_edit_public');
+    Route::get('/profile/edit/private', 'profile_edit_private');
+    Route::get('/profile/edit/password', 'profile_edit_password');
+    Route::get('/profile/{id}', 'profile')->middleware(['rights:1']);
 });
+
+Route::controller(ServerManagementController::class)->group(function()
+{
+    Route::get('/server-management', 'servermanagement');
+    Route::get('/server-management/add', 'servermanagement_add');
+    Route::get('/server-management/delete', 'servermanagement_delete');
+    Route::get('/server-management/console/{id}', 'servermanagement_console');
+    Route::get('/server-management/console-update', 'servermanagement_console_update');
+    Route::get('/server-management/console-runcommand', 'servermanagement_console_runcommand');
+    Route::get('/server-management/players/{id}', 'servermanagement_players');
+    Route::get('/server-management/lua/{id}', 'servermanagement_lua');
+    Route::get('/server-management/errors/{id}', 'servermanagement_errors');
+});
+
+//Route::get('/control-panel/{option}', [MainController::class, 'controlpanel'])->middleware('auth');
+
+Route::controller(ControlPanelController::class)->group(function()
+{
+    Route::get('/control-panel', 'statistics');
+    Route::get('/control-panel/statistics', 'statistics');
+    Route::get('/control-panel/servers', 'servers');
+    Route::post('/control-panel/servers/add', 'servers_add');
+    Route::post('/control-panel/servers/delete', 'servers_delete');
+});
+
+// Route::get('/user/{id}/{name}', function ($id, $name) {
+//     return "ID ". $id . " NAME " . $name;
+// });
 
 Auth::routes();
