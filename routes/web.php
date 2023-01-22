@@ -46,7 +46,7 @@ Route::controller(ProfileController::class)->group(function()
     Route::get('/profile/edit/public', 'profile_edit_public');
     Route::get('/profile/edit/private', 'profile_edit_private');
     Route::get('/profile/edit/password', 'profile_edit_password');
-    Route::get('/profile/{id}', 'profile')->middleware(['rights:1']);
+    Route::get('/profile/{id}', 'profile');//->middleware(['rights:1']);
 });
 
 Route::controller(ServerManagementController::class)->group(function()

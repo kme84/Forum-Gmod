@@ -27,7 +27,7 @@ class PostsPolicy
         }
     }
 
-    public function add(User $user, Posts $posts)
+    public function add(User $user, Posts $posts, int $topic_id)
     {
         return $user->id === $posts->author;
     }

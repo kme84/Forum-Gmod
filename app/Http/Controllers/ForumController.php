@@ -69,7 +69,7 @@ class ForumController extends Controller
         ]);
 
         $topic = new Topics();
-        $this->authorize('add', $topic);
+        $this->authorize('add', [$topic, $request->input('id')]);
 
         $topic->chapter = $request->input('id');
         $topic->name = $request->input('name');
@@ -86,7 +86,7 @@ class ForumController extends Controller
         ]);
 
         $topic = Topics::findOrFail($request->input('id'));
-        $this->authorize('delete', $topic);
+        $this->authorize('delete', [$topic, $topic->chapter]);
 
         $topic->delete();
 
@@ -138,6 +138,7 @@ class ForumController extends Controller
         $post->topic = $request->input('id');
         $post->title = $request->input('name');
         $post->content = $content;
+        $post->author = Auth::id();
 
         $post->save();
 

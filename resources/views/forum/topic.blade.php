@@ -4,9 +4,8 @@
 @endsection
 @section('main_content')
 <div class="container">
-    <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddDiscussionModal">Добавить обсуждение</button>
-    @can('delete', $topic)
-    <button class="mb-4 w-100 btn btn-danger btn-lg" data-bs-toggle="modal" data-bs-target="#RemoveTopicModal">Удалить тему</button>
+    @can('add', [new App\Models\Posts(), $topic->id])
+    <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddPostModal">Добавить обсуждение</button>
     @endcan
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -26,7 +25,21 @@
       <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
         <div class="d-flex justify-content-between">
           <a class="text-decoration-none text-muted" href="post/{{$post->id}}"><strong class="text-gray-dark">{{$post->title}}</strong></a>
-          <a href="#">Follow</a>
+          @can('delete', $post)
+          <div class="dropdown show">
+            <a href="#" data-bs-toggle="dropdown" data-display="static">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="19" cy="12" r="1"></circle>
+                    <circle cx="5" cy="12" r="1"></circle>
+                </svg>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#RemovePostModal" onclick="removepost.id.value={{$post->id}}">Удалить пост</button>
+            </div>
+          </div>
+          @endcan
+          {{-- <a href="#">Follow</a> --}}
         </div>
         <span class="d-block">Количество сообщений</span>
       </div>
@@ -34,30 +47,8 @@
 
     @endforeach
 </div>
-<!-- Modal RemoveTopic -->
-<div class="modal fade" id="RemoveTopicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Вы действительно хотите удалить тему?</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <form class="d-grid gap-3" id="removetopic" method="post" action="deletetopic" onsubmit="return this.removetopic.disabled=true;">
-                @csrf
-                <input type="hidden" name="id" id="id" value="{{$topic->id}}">
-                <p>Вы действительно хотите удалить тему?</p>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-            <input class="btn btn-danger" name="removetopic" type="submit" form="removetopic" value="Удалить">
-        </div>
-        </div>
-    </div>
-  </div>
 <!-- Modal addpost -->
-<div class="modal fade" id="AddDiscussionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="AddPostModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 <div class="modal-dialog modal-xl">
     <div class="modal-content">
     <div class="modal-header">
@@ -78,6 +69,28 @@
     </div>
     </div>
 </div>
+</div>
+<!-- Modal deletepost -->
+<div class="modal fade" id="RemovePostModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Вы действительно хотите удалить тему?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form class="d-grid gap-3" id="removepost" method="post" action="deletepost" onsubmit="return this.removepost.disabled=true;">
+                @csrf
+                <input type="hidden" name="id" id="id">
+                <p>Вы действительно хотите удалить тему?</p>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <input class="btn btn-danger" name="removepost" type="submit" form="removepost" value="Удалить">
+        </div>
+        </div>
+    </div>
 </div>
 <script src="{{asset('ckeditor5-build-classic/ckeditor.js')}}"></script>
 <script>

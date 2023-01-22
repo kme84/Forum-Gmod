@@ -19,20 +19,20 @@ class ControlPanelController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'rights:1']);
     }
 
-    public function controlpanel($option)
-    {
-        if (view()->exists('control-panel/' . $option))
-        {
-            return view('control-panel/' . $option);
-        }
-        else
-        {
-            return App::abort(404);
-        }
-    }
+    // public function controlpanel($option)
+    // {
+    //     if (view()->exists('control-panel/' . $option))
+    //     {
+    //         return view('control-panel/' . $option);
+    //     }
+    //     else
+    //     {
+    //         return App::abort(404);
+    //     }
+    // }
 
     public function statistics()
     {

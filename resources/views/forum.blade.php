@@ -13,12 +13,15 @@
           </ul>
       </div>
   @endif
+
+  @can('add', new App\Models\Chapters())
   <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddChapterModal">Добавить раздел</button>
+  @endcan
   @foreach ($chapters as $chapter)
   <div class="my-3 p-3 bg-body rounded shadow-sm">
     <h6 class="border-bottom pb-2 mb-0 d-flex justify-content-between">
       <span>{{$chapter->name}}</span>
-      @canany(['add', 'delete'], $chapter)
+      @if (Auth::user()->can('delete', $chapter) || Auth::user()->can('add', [new App\Models\Topics(), $chapter->id]))
       <div class="dropdown show">
         <a href="#" data-bs-toggle="dropdown" data-display="static">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
@@ -28,11 +31,15 @@
             </svg>
         </a>
         <div class="dropdown-menu dropdown-menu-right">
+            @can('add', [new App\Models\Topics(), $chapter->id])
             <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#AddTopicModal" onclick="addtopic.id.value={{$chapter->id}}">Добавить тему</button>
+            @endcan
+            @can('delete', $chapter)
             <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#RemoveChapterModal" onclick="removechapter.id.value={{$chapter->id}}">Удалить раздел</button>
+            @endcan
         </div>
       </div>
-      @endcanany
+      @endif
     </h6>
     @foreach ($topics as $topic)
     @if ($topic->chapter == $chapter->id)
@@ -43,16 +50,29 @@
       <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
         <div class="d-flex justify-content-between">
           <a class="text-decoration-none text-muted" href="forum/{{$topic->id}}"><strong class="text-gray-dark">{{$topic->name}}</strong></a>
-          <a href="#">Follow</a>
+          @can('delete', $topic)
+          <div class="dropdown show">
+            <a href="#" data-bs-toggle="dropdown" data-display="static">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="19" cy="12" r="1"></circle>
+                    <circle cx="5" cy="12" r="1"></circle>
+                </svg>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#RemoveTopicModal" onclick="removetopic.id.value={{$topic->id}}">Удалить тему</button>
+            </div>
+          </div>
+          @endcan
         </div>
         <span class="d-block">Количество постов</span>
       </div>
     </div>
     @endif
     @endforeach
-    <small class="d-block text-end mt-3">
+    {{-- <small class="d-block text-end mt-3">
       <a href="#">All suggestions</a>
-    </small>
+    </small> --}}
   </div> 
   @endforeach 
 </div>
@@ -117,6 +137,28 @@
       <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
           <input class="btn btn-success" name="addtopic" type="submit" form="addtopic" value="Добавить">
+      </div>
+      </div>
+  </div>
+</div>
+<!-- Modal RemoveTopic -->
+<div class="modal fade" id="RemoveTopicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+      <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Вы действительно хотите удалить тему?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form class="d-grid gap-3" id="removetopic" method="post" action="forum/deletetopic" onsubmit="return this.removetopic.disabled=true;">
+              @csrf
+              <input type="hidden" name="id" id="id">
+              <p>Вы действительно хотите удалить тему?</p>
+          </form>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <input class="btn btn-danger" name="removetopic" type="submit" form="removetopic" value="Удалить">
       </div>
       </div>
   </div>

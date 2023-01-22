@@ -4,20 +4,13 @@
 @endsection
 @section('main_content')
 <div class="container">
-    @can('delete', $post)
-    <form action="/forum/deletepost" id="deletepost" name="deletepost" method="post" onsubmit="return this.deletepost.disabled=true;">
-        @csrf
-        <input type="hidden" name="id" id="id" value="{{$id}}">
-        <input class="mb-4 w-100 btn btn-danger btn-lg" type="submit" value="Удалить пост">
-    </form>
-    @endcan
     <div class="container-fluid mt-100">
         <div class="row">
             <div class="col-md-12">
                 <div class="card mb-4">
                     <div class="card-header">
                         <div class="d-flex w-100 align-items-center">
-                            <img src={{$author->avatar ? asset('/storage/'.$author->avatar) : "https://bootdey.com/img/Content/avatar/avatar1.png"}} class="d-block ui-w-40 rounded-circle" width="64" height="64">
+                            <img src={{$author->avatar ? asset('/storage/'.$author->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="64" height="64">
                             <div class="ms-3">
                                 <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$author->name}}</a>
                                 <div class="text-muted small">13 days ago</div>
@@ -41,7 +34,7 @@
         @foreach ($comments as $key => $comment)
             <div class="card d-flex flex-row mb-4">
                 <div class="card-header d-flex align-items-center">
-                    <img src={{$users[$key]->avatar ? asset('/storage/'.$users[$key]->avatar) : "https://bootdey.com/img/Content/avatar/avatar1.png"}} class="d-block ui-w-40 rounded-circle" width="64" height="64">
+                    <img src={{$users[$key]->avatar ? asset('/storage/'.$users[$key]->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="64" height="64">
                     <div class="ms-3">
                         <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$users[$key]->name}}</a>
                         <div class="text-muted small">13 days ago</div>
@@ -55,11 +48,13 @@
                             <input type="hidden" name="id" id="id" value="{{$key}}">
                             <input class="btn btn-primary mt-2 ms-2" name="submit" type="submit" value="Ответить">
                         </form>
+                        @can('delete', $comment)
                         <form action='deletecomment' method='POST' name='deletecomment' id='deletecomment' enctype="multipart/form-data" onsubmit="return this.deletecomment.disabled=true;">
                             @csrf
                             <input type="hidden" name="id" id="id" value="{{$comment->id}}">
                             <input class="btn btn-danger mt-2 ms-2" name="submit" type="submit" value="Удалить">
                         </form>
+                        @endcan
                 </div>
                 </div>
             </div>
@@ -68,7 +63,7 @@
 
         <div class="card d-flex flex-row mb-4">
             <div class="card-header d-flex align-items-center">
-                <img src={{$author->avatar ? asset('/storage/'.$author->avatar) : "https://bootdey.com/img/Content/avatar/avatar1.png"}} class="d-block ui-w-40 rounded-circle" width="64" height="64">
+                <img src={{Auth::user()->avatar ? asset('/storage/'.$author->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="64" height="64">
                 <div class="ms-3">
                     <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$author->name}}</a>
                     <div class="text-muted small">13 days ago</div>
