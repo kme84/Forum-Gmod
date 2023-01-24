@@ -42,11 +42,11 @@ Route::controller(ForumController::class)->group(function()
 
 Route::controller(ProfileController::class)->group(function()
 {
-    Route::get('/profile/edit', 'profile_edit');
-    Route::get('/profile/edit/public', 'profile_edit_public');
-    Route::get('/profile/edit/private', 'profile_edit_private');
-    Route::get('/profile/edit/password', 'profile_edit_password');
-    Route::get('/profile/{id}', 'profile');//->middleware(['rights:1']);
+    Route::get('/profile/{id}/edit', 'profile_edit');
+    Route::post('/profile/edit/public', 'profile_edit_public');
+    Route::post('/profile/edit/private', 'profile_edit_private');
+    Route::post('/profile/edit/password', 'profile_edit_password');
+    Route::get('/profile/{id}', 'profile');
 });
 
 Route::controller(ServerManagementController::class)->group(function()

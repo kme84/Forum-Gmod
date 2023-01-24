@@ -29,4 +29,9 @@ class TopicsPolicy
     {
         return $user->role === 'admin';
     }
+    // Может ли пользователь просмотреть тему
+    public function view(User $user, Topics $topic)
+    {
+        return $user->role === 'admin';
+    }
 }

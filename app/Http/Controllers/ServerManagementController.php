@@ -13,7 +13,7 @@ class ServerManagementController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'rights:1']);
+        $this->middleware('auth');
     }
     
     public function servermanagement()

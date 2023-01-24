@@ -41,23 +41,6 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-actions float-end">
-                                <div class="dropdown show">
-                                    <a href="#" data-bs-toggle="dropdown" data-display="static">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
-                                            <circle cx="12" cy="12" r="1"></circle>
-                                            <circle cx="19" cy="12" r="1"></circle>
-                                            <circle cx="5" cy="12" r="1"></circle>
-                                        </svg>
-                                    </a>
-
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
-                                </div>
-                            </div>
                             <h5 class="card-title mb-0">Публичная информация</h5>
                         </div>
                         <div class="card-body">
@@ -67,16 +50,16 @@
                                     <div class="col-md-8">
                                         <div class="form-group">
                                             <label for="inputUsername">Псевдоним</label>
-                                            <input type="text" class="form-control" id="inputUsername" name="inputUsername" placeholder="Псевдоним" value="{{ Auth::user()->name }}">
+                                            <input type="text" class="form-control" id="inputUsername" name="inputUsername" placeholder="Псевдоним" value="{{ $user->name }}">
                                         </div>
                                         <div class="form-group mt-2">
                                             <label for="inputUsername">О себе</label>
-                                            <textarea rows="2" class="form-control" id="inputBio" name="inputBio" placeholder="Расскажите что-нибудь о себе">{{ Auth::user()->bio }}</textarea>
+                                            <textarea rows="2" class="form-control" id="inputBio" name="inputBio" placeholder="Расскажите что-нибудь о себе">{{ $user->bio }}</textarea>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="text-center">
-                                            <img name="avatarImage" id="avatarImage" src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : "https://bootdey.com/img/Content/avatar/avatar1.png"}} class="rounded-circle img-responsive mt-2" width="128" height="128">
+                                            <img name="avatarImage" id="avatarImage" src={{$user->avatar ? asset('/storage/'.$user->avatar) : "https://bootdey.com/img/Content/avatar/avatar1.png"}} class="rounded-circle img-responsive mt-2" width="128" height="128">
                                             <div class="mt-2">
                                                 <span onclick="uploadAvatar.click()" class="btn btn-primary"><i class="fa fa-upload"></i></span>
                                                 <input type="file" name="uploadAvatar" id="uploadAvatar" hidden>
@@ -85,7 +68,7 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                <input type="hidden" name="id" id="id" value="{{$user->id}}">
                                 <button type="submit" class="btn btn-primary mt-2">Сохранить</button>
                             </form>
 
@@ -94,23 +77,6 @@
 
                     <div class="card mt-5">
                         <div class="card-header">
-                            <div class="card-actions float-end">
-                                <div class="dropdown show">
-                                    <a href="#" data-bs-toggle="dropdown" data-display="static">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
-                                            <circle cx="12" cy="12" r="1"></circle>
-                                            <circle cx="19" cy="12" r="1"></circle>
-                                            <circle cx="5" cy="12" r="1"></circle>
-                                        </svg>
-                                    </a>
-
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
-                                </div>
-                            </div>
                             <h5 class="card-title mb-0">Личная информация</h5>
                         </div>
                         <div class="card-body">
@@ -119,27 +85,28 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="inputFirstName">Имя</label>
-                                        <input type="text" class="form-control" id="inputFirstName" name="inputFirstName" placeholder="First name" value="{{ Auth::user()->firstname }}">
+                                        <input type="text" class="form-control" id="inputFirstName" name="inputFirstName" placeholder="First name" value="{{ $user->firstname }}">
                                     </div>
                                     <div class="form-group col-md-6 mt-2">
                                         <label for="inputLastName">Фамилия</label>
-                                        <input type="text" class="form-control" id="inputLastName" name="inputLastName" placeholder="Last name" value="{{ Auth::user()->lastname }}">
+                                        <input type="text" class="form-control" id="inputLastName" name="inputLastName" placeholder="Last name" value="{{ $user->lastname }}">
                                     </div>
                                 </div>
                                 <div class="form-group mt-2">
                                     <label for="inputEmail4">Email</label>
-                                    <input type="email" class="form-control" id="inputEmail4" placeholder="Email" value="{{ Auth::user()->email }}" disabled>
+                                    <input type="email" class="form-control" id="inputEmail4" placeholder="Email" value="{{ $user->email }}" disabled>
                                 </div>
                                 <div class="form-row mt-2">
                                     <div class="form-group col-md-4">
                                         <label for="inputState">Пол</label>
                                         <select id="inputState" name="inputState" class="form-control">
-                                            <option {{!Auth::user()->sex ? "selected" : null}}>Выберите...</option>
-                                            <option value='M' {{Auth::user()->sex == 'M' ? "selected" : null}}>Мужской</option>
-                                            <option value='W' {{Auth::user()->sex == 'W' ? "selected" : null}}>Женский</option>
+                                            <option {{!$user->sex ? "selected" : null}}>Выберите...</option>
+                                            <option value='M' {{$user->sex == 'M' ? "selected" : null}}>Мужской</option>
+                                            <option value='W' {{$user->sex == 'W' ? "selected" : null}}>Женский</option>
                                         </select>
                                     </div>
                                 </div>
+                                <input type="hidden" name="id" id="id" value="{{$user->id}}">
                                 <button type="submit" class="btn btn-primary mt-2">Сохранить</button>
                             </form>
 
@@ -154,6 +121,7 @@
 
                             <form action="/profile/edit/password" method="POST">
                                 @csrf
+                                @if($user->id === Auth::id())
                                 <div class="form-group">
                                     <label for="inputPasswordCurrent">Текущий пароль</label>
                                     <input type="password" class="form-control" id="inputPasswordCurrent" name="inputPasswordCurrent">
@@ -161,6 +129,7 @@
                                         <small><a href="{{ route('password.request') }}">{{ __('Forgot Your Password?') }}</a></small>
                                     @endif
                                 </div>
+                                @endif
                                 <div class="form-group mt-2">
                                     <label for="inputPasswordNew">Новый пароль</label>
                                     <input type="password" class="form-control" id="inputPasswordNew" name="inputPasswordNew">
@@ -169,6 +138,7 @@
                                     <label for="inputPasswordNew2">Подтвердите пароль</label>
                                     <input type="password" class="form-control" id="inputPasswordNew2" name="inputPasswordNew2">
                                 </div>
+                                <input type="hidden" name="id" id="id" value="{{$user->id}}">
                                 <button type="submit" class="btn btn-primary mt-2">Сохранить</button>
                             </form>
 

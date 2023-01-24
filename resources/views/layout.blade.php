@@ -8,6 +8,8 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link rel="icon" href={{ asset('/storage/static/gmod_icon.svg') }}>
+
     <title>@yield('title')</title>
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -26,7 +28,9 @@
               <li><a href="/" class="nav-link px-2 {{Request::is('/') ? "text-secondary" : "text-white"}}">Главная</a></li>
               <li><a href="/forum" class="nav-link px-2 {{Request::is('forum') ? "text-secondary" : "text-white"}}">Форум</a></li>
               <li><a href="/users" class="nav-link px-2 {{Request::is('users') ? "text-secondary" : "text-white"}}">Пользователи</a></li>
+              @can('view', new App\Models\ServerControl())
               <li><a href="/server-management" class="nav-link px-2 {{Request::is('server-management') ? "text-secondary" : "text-white"}}">Управление серверами</a></li>
+              @endcan
             </ul>
     
             {{-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
@@ -48,8 +52,10 @@
                       {{ Auth::user()->name }}
                   </a>
                   <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
+                      @can('view', new App\Models\Servers())
                       <li><a class="dropdown-item" href="/control-panel/servers">Панель управления</a></li>
-                      <li><a class="dropdown-item" href="/profile/edit">Настройки</a></li>
+                      @endcan
+                      <li><a class="dropdown-item" href="/profile/{{Auth::id()}}/edit">Настройки</a></li>
                       <li><a class="dropdown-item" href="/profile/{{Auth::id()}}">Профиль</a></li>
                       <li><hr class="dropdown-divider"></li>
                       <li><a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();

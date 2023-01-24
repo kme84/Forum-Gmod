@@ -1,9 +1,15 @@
 @extends('layout')
 @section('title')
-    Форум | Тема
+    Форум | {{$topic->name}}
 @endsection
 @section('main_content')
 <div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/forum">Форум</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{$topic->name}}</li>
+        </ol>
+    </nav>
     @can('add', [new App\Models\Posts(), $topic->id])
     <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddPostModal">Добавить обсуждение</button>
     @endcan

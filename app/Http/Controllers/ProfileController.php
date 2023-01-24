@@ -15,14 +15,23 @@ class ProfileController extends Controller
     {
         $this->middleware('auth');
     }
-    
-    public function profile_edit()
+
+    public function profile($id)
     {
-        return view('profile_edit');
+        $user = User::findOrFail($id);
+        return view('profile', ['user' => $user]);
     }
+    
+    public function profile_edit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('profile_edit', ['user' => $user]);
+    }
+    
     public function profile_edit_public(Request $request)
     {
         $valid = $request->validate([
+            'id' => 'required',
             'inputUsername' => 'required|min:3|max:25',
             'inputBio' => 'nullable|min:5|max:500',
             'uploadAvatar' => 'nullable|file|mimes:jpg,bmp,png,gif'
@@ -30,7 +39,7 @@ class ProfileController extends Controller
 
         $file = $request->file('uploadAvatar');
 
-        $user = User::find(Auth::id());
+        $user = User::find($request->input('id'));
 
         $user->name = $request->input('inputUsername');
         $user->bio = $request->input('inputBio');
@@ -47,44 +56,54 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return redirect('profile/'.Auth::id().'/edit');
+        return redirect('profile/'.$request->input('id').'/edit');
     }
     public function profile_edit_private(Request $request)
     {
         $valid = $request->validate([
+            'id' => 'required',
             'inputFirstName' => 'nullable|min:3|max:500',
             'inputLastName' => 'nullable|min:3|max:500',
             'inputState' => 'required|min:1|max:25',
         ]);
 
-        $user = User::find(Auth::id());
+        $user = User::find($request->input('id'));
 
         $user->firstname = $request->input('inputFirstName');
         $user->lastname = $request->input('inputLastName');
         $user->sex = $request->input('inputState');
         $user->save();
 
-        return redirect('profile/'.Auth::id().'/edit');
+        return redirect('profile/'.$request->input('id').'/edit');
     }
     public function profile_edit_password(Request $request)
     {
         $valid = $request->validate([
-            'inputPasswordCurrent' => 'required|min:8|max:32',
+            'id' => 'required',
+            'inputPasswordCurrent' => 'min:8|max:32',
             'inputPasswordNew' => 'required|min:8|max:32',
             'inputPasswordNew2' => 'required|min:8|max:32',
         ]);
 
-        $user = User::find(Auth::id());
+        $user = User::find($request->input('id'));
 
-        if ($request->input('inputPasswordNew') == $request->input('inputPasswordNew2') && Hash::check($request->input('inputPasswordCurrent'), $user->password)) {
-            $user->password = Hash::make($request->input('inputPasswordNew'));
-            $user->save();
+        if(Auth::user()->role === "admin" && Auth::id() != $request->input('id'))
+        {
+            $this->authorize('edit', $user);
+            if ($request->input('inputPasswordNew') == $request->input('inputPasswordNew2')) {
+                $user->password = Hash::make($request->input('inputPasswordNew'));
+                $user->save();
+            }
         }
-        return redirect('profile/'.Auth::id().'/edit');
-    }
-    public function profile($id)
-    {
-        $user = User::findOrFail($id);
-        return view('profile', ['user' => $user]);
+        else
+        {
+            if ($request->input('inputPasswordNew') == $request->input('inputPasswordNew2') && Hash::check($request->input('inputPasswordCurrent'), $user->password)) {
+                $user->password = Hash::make($request->input('inputPasswordNew'));
+                $user->save();
+            }
+        }
+
+        
+        return redirect('profile/'.$request->input('id').'/edit');
     }
 }

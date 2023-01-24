@@ -1,5 +1,7 @@
 @extends('layout')
-
+@section('title')
+    Сброс пароля
+@endsection
 @section('main_content')
 <div class="container">
     <div class="row justify-content-center">

@@ -13,7 +13,12 @@
           </ul>
       </div>
   @endif
-
+    
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">Форум</li>
+    </ol>
+  </nav>
   @can('add', new App\Models\Chapters())
   <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddChapterModal">Добавить раздел</button>
   @endcan

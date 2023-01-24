@@ -91,11 +91,13 @@
                     </div>
                   </div>
                   <hr>
+                  @can('edit', $user)
                   <div class="row">
                     <div class="col-sm-12">
-                      <a class="btn btn-info " target="__blank" href="edit">Редактировать</a>
+                      <a class="btn btn-info" href="{{$user->id}}/edit">Редактировать</a>
                     </div>
                   </div>
+                  @endcan
                 </div>
               </div>
             </div>

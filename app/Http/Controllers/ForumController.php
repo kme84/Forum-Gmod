@@ -103,13 +103,14 @@ class ForumController extends Controller
     public function forum_post($id)
     {
         $post = Posts::findOrFail($id);
+        $topic = Topics::findOrFail($post->topic);
         $author = User::findOrFail($post->author);
         $comments = Comment::where('post', $id)->get();
         $users = array();
         foreach ($comments as $key => $value) {
             $users[$key] = User::findOrFail($value->author);
         }
-        return view('forum/post', ['id' => $id, 'post' => $post, 'author' => $author, 'comments' => $comments, 'users' => $users]);
+        return view('forum/post', ['id' => $id, 'topic' => $topic, 'post' => $post, 'author' => $author, 'comments' => $comments, 'users' => $users]);
     }
 
     public function forum_addpost(Request $request)
