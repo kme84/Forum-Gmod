@@ -27,7 +27,7 @@
                 <h6 class="mb-0">{{$player['personaname']}}</h6>
               <p class="mb-0 opacity-75">{{$player['steamid']}}</p>
             </div>
-            <small class="opacity-50 text-nowrap">{{date("H:i:s", $player['time'])}}</small>
+            <small class="opacity-50 text-nowrap">{{date("H:i:s", round($player['time']))}}</small>
           </div>
         </a>
     </div>

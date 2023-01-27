@@ -52,11 +52,11 @@ Route::controller(ProfileController::class)->group(function()
 Route::controller(ServerManagementController::class)->group(function()
 {
     Route::get('/server-management', 'servermanagement');
-    Route::get('/server-management/add', 'servermanagement_add');
-    Route::get('/server-management/delete', 'servermanagement_delete');
+    Route::post('/server-management/add', 'servermanagement_add');
+    Route::post('/server-management/delete', 'servermanagement_delete');
     Route::get('/server-management/console/{id}', 'servermanagement_console');
     Route::get('/server-management/console-update', 'servermanagement_console_update');
-    Route::get('/server-management/console-runcommand', 'servermanagement_console_runcommand');
+    Route::post('/server-management/console-runcommand', 'servermanagement_console_runcommand');
     Route::get('/server-management/players/{id}', 'servermanagement_players');
     Route::get('/server-management/lua/{id}', 'servermanagement_lua');
     Route::get('/server-management/errors/{id}', 'servermanagement_errors');
@@ -76,5 +76,6 @@ Route::controller(ControlPanelController::class)->group(function()
 // Route::get('/user/{id}/{name}', function ($id, $name) {
 //     return "ID ". $id . " NAME " . $name;
 // });
+
 
 Auth::routes();
