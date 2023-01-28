@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 
+use Intervention\Image\Facades\Image;
+
 use App\Models\User;
 
 class ProfileController extends Controller
@@ -47,6 +49,8 @@ class ProfileController extends Controller
         if($file)
         {
             $path = $file->store('uploads', 'public');
+            
+            $img = Image::make(Storage::path('/public/').$path)->fit(128, 128)->save(Storage::path('/public/').$path);
             if($user->avatar)
             {
                 Storage::disk('public')->delete($user->avatar);

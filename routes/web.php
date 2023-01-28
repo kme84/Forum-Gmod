@@ -60,6 +60,7 @@ Route::controller(ServerManagementController::class)->group(function()
     Route::get('/server-management/players/{id}', 'servermanagement_players');
     Route::get('/server-management/lua/{id}', 'servermanagement_lua');
     Route::get('/server-management/errors/{id}', 'servermanagement_errors');
+    Route::post('/server-management/error-delete', 'servermanagement_error_delete');
 });
 
 //Route::get('/control-panel/{option}', [MainController::class, 'controlpanel'])->middleware('auth');

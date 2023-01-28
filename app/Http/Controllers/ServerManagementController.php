@@ -142,7 +142,7 @@ class ServerManagementController extends Controller
         $server = ServerControl::findOrFail($request->input('id'));
         $command = new ServerCommand();
         $command->server_id = $server->id;
-        $command->type = $request->input('type');;
+        $command->type = $request->input('type');
         $command->command = $request->input('command');
         $command->save();
         return response('', 200)
@@ -185,5 +185,13 @@ class ServerManagementController extends Controller
         $server = ServerControl::findOrFail($id);
         $errors = ServerError::where('server_id', '=', $server->id)->get();
         return view('server-management/errors', ['server' => $server, 'errors' => $errors]);
+    }
+    public function servermanagement_error_delete(Request $request)
+    {
+        $error = ServerError::findOrFail($request->input('id'));
+        $error->delete();
+        
+        return response('', 200)
+        ->header('Content-Type', 'text/plain');
     }
 }

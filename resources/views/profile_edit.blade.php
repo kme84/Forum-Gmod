@@ -59,7 +59,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="text-center">
-                                            <img name="avatarImage" id="avatarImage" src={{$user->avatar ? asset('/storage/'.$user->avatar) : "https://bootdey.com/img/Content/avatar/avatar1.png"}} class="rounded-circle img-responsive mt-2" width="128" height="128">
+                                            <img name="avatarImage" id="avatarImage" src={{$user->avatar ? asset('/storage/'.$user->avatar) : asset('/storage/static/noavatar.png')}} class="rounded-circle img-responsive mt-2" width="128" height="128">
                                             <div class="mt-2">
                                                 <span onclick="uploadAvatar.click()" class="btn btn-primary"><i class="fa fa-upload"></i></span>
                                                 <input type="file" name="uploadAvatar" id="uploadAvatar" hidden>

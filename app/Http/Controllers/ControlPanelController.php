@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 
+use Intervention\Image\Facades\Image;
+
 use App\Models\Servers;
 
 
@@ -63,6 +65,7 @@ class ControlPanelController extends Controller
 
         $file = $request->file('banner');
         $path = $file->store('uploads', 'public');
+        $img = Image::make(Storage::path('/public/').$path)->fit(512, 512)->save(Storage::path('/public/').$path);
 
         $server->ipport = $request->input('ipport');
         $server->gamemode = $request->input('gamemode');
