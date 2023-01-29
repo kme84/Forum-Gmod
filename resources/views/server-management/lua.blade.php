@@ -1,34 +1,18 @@
-@extends('layout')
+@extends('server-management.layout')
 @section('title')
-    Управление серверами
+    Управление серверами | Lua
 @endsection
-@section('main_content')
-<div class="container">
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link" href="/server-management/console/{{$server->id}}">Консоль</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/server-management/players/{{$server->id}}">Игроки</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="/server-management/lua/{{$server->id}}">Lua</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/server-management/errors/{{$server->id}}">Ошибки</a>
-        </li>
-    </ul>
-    <textarea style="overflow:auto;resize:none" class="w-100" rows="25" readonly="" wrap="off" id="console"></textarea>
-    <form class="row g-3" name="formlua" onsubmit="sendLUA({{$server->id}}, document.formlua.command.value); return false;">
-        @csrf
-        <input type="hidden" name="id" value="{{$server->id}}">
-        <input type="hidden" name="type" value='lua'>
-        <textarea style="overflow:auto;resize:none" class="w-100" rows="25" wrap="off" name="command"></textarea>
-        <div class="col-auto">
-          <button type="button" class="btn btn-primary mb-3" onclick="sendLUA({{$server->id}}, document.formlua.command.value); return false;">Выполнить</button>
-        </div>
-    </form>
-</div>
+@section('secondary_content')
+<textarea style="overflow:auto;resize:none" class="w-100" rows="25" readonly="" wrap="off" id="console"></textarea>
+<form class="row g-3" name="formlua" onsubmit="sendLUA({{$server->id}}, document.formlua.command.value); return false;">
+    @csrf
+    <input type="hidden" name="id" value="{{$server->id}}">
+    <input type="hidden" name="type" value='lua'>
+    <textarea style="overflow:auto;resize:none" class="w-100" rows="25" wrap="off" name="command"></textarea>
+    <div class="col-auto">
+      <button type="button" class="btn btn-primary mb-3" onclick="sendLUA({{$server->id}}, document.formlua.command.value); return false;">Выполнить</button>
+    </div>
+</form>
 <script>
   let tell = 0;
   let id = '{{$server->id}}'
@@ -85,7 +69,5 @@
       }
     };
   }
-
-
 </script>
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 use App\Models\ServerControl;
@@ -22,27 +23,35 @@ class ServerManagementController extends Controller
     }
     public function servermanagement_add(Request $request)
     {
+        $this->authorize('add', ServerControl::class);
+
         $valid = $request->validate([
             'ipport' => 'required|min:4|max:100',
             'gamemode' => 'required|min:4|max:100',
         ]);
 
-        $review = new ServerControl();
-        $review->ipport = $request->input('ipport');
-        $review->gamemode = $request->input('gamemode');
+        $server = new ServerControl();
+        $server->ipport = $request->input('ipport');
+        $server->gamemode = $request->input('gamemode');
+        $server->author = Auth::id();
 
-        $review->save();
+        $server->save();
 
         return redirect('server-management');
     }
     public function servermanagement_delete(Request $request)
     {
+        $this->authorize('delete', ServerControl::class, $request->id);
+
         ServerControl::destroy($request->id);
         return redirect('server-management');
     }
     public function servermanagement_console($id)
     {
         $server = ServerControl::findOrFail($id);
+
+        $this->authorize('view_console', $server);
+
         return view('server-management/console', ['server' => $server]);
     }
     public function servermanagement_console_receive(Request $request)
@@ -62,7 +71,10 @@ class ServerManagementController extends Controller
         }
         else
         {
-            Storage::disk('local')->append($server->id.'/serverlogs.txt', $request->log);
+            if ($request->log != "")
+            {
+                Storage::disk('local')->append($server->id.'/serverlogs.txt', $request->log);
+            }
         }
 
         Storage::disk('local')->put($server->id.'/players.txt', $request->players);
@@ -133,6 +145,7 @@ class ServerManagementController extends Controller
     }
     public function servermanagement_console_runcommand(Request $request)
     {
+
         $valid = $request->validate([
             'id' => 'required',
             'type' => 'required|min:1|max:20',
@@ -140,6 +153,15 @@ class ServerManagementController extends Controller
         ]);
 
         $server = ServerControl::findOrFail($request->input('id'));
+        if ($request->input('type') == "command")
+        {
+            $this->authorize('run_command', $server);
+        }
+        elseif ($request->input('type') == "lua")
+        {
+            $this->authorize('run_lua', $server);
+        }
+    
         $command = new ServerCommand();
         $command->server_id = $server->id;
         $command->type = $request->input('type');
@@ -151,6 +173,9 @@ class ServerManagementController extends Controller
     public function servermanagement_players($id)
     {
         $server = ServerControl::findOrFail($id);
+
+        $this->authorize('view_console', $server);
+
         if (Storage::disk('local')->exists($id.'/players.txt'))
         {
             $players = Storage::disk('local')->get($id.'/players.txt');
@@ -178,11 +203,17 @@ class ServerManagementController extends Controller
     public function servermanagement_lua($id)
     {
         $server = ServerControl::findOrFail($id);
+
+        $this->authorize('run_lua', $server);
+
         return view('server-management/lua', ['server' => $server]);
     }
     public function servermanagement_errors($id)
     {
         $server = ServerControl::findOrFail($id);
+
+        $this->authorize('view_errors', $server);
+
         $errors = ServerError::where('server_id', '=', $server->id)->get();
         return view('server-management/errors', ['server' => $server, 'errors' => $errors]);
     }

@@ -49,18 +49,20 @@ Route::controller(ProfileController::class)->group(function()
     Route::get('/profile/{id}', 'profile');
 });
 
-Route::controller(ServerManagementController::class)->group(function()
-{
-    Route::get('/server-management', 'servermanagement');
-    Route::post('/server-management/add', 'servermanagement_add');
-    Route::post('/server-management/delete', 'servermanagement_delete');
-    Route::get('/server-management/console/{id}', 'servermanagement_console');
-    Route::get('/server-management/console-update', 'servermanagement_console_update');
-    Route::post('/server-management/console-runcommand', 'servermanagement_console_runcommand');
-    Route::get('/server-management/players/{id}', 'servermanagement_players');
-    Route::get('/server-management/lua/{id}', 'servermanagement_lua');
-    Route::get('/server-management/errors/{id}', 'servermanagement_errors');
-    Route::post('/server-management/error-delete', 'servermanagement_error_delete');
+Route::middleware('auth')->group(function () {
+    Route::controller(ServerManagementController::class)->group(function()
+    {
+        Route::get('/server-management', 'servermanagement');
+        Route::post('/server-management/add', 'servermanagement_add');
+        Route::post('/server-management/delete', 'servermanagement_delete');
+        Route::get('/server-management/console/{id}', 'servermanagement_console');
+        Route::get('/server-management/console-update', 'servermanagement_console_update');
+        Route::post('/server-management/console-runcommand', 'servermanagement_console_runcommand');
+        Route::get('/server-management/players/{id}', 'servermanagement_players');
+        Route::get('/server-management/lua/{id}', 'servermanagement_lua');
+        Route::get('/server-management/errors/{id}', 'servermanagement_errors');
+        Route::post('/server-management/error-delete', 'servermanagement_error_delete');
+    });
 });
 
 //Route::get('/control-panel/{option}', [MainController::class, 'controlpanel'])->middleware('auth');

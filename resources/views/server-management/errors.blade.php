@@ -1,24 +1,9 @@
-@extends('layout')
+@extends('server-management.layout')
 @section('title')
-    Управление серверами
+    Управление серверами | Ошибки
 @endsection
-@section('main_content')
-<div class="container">
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link" href="/server-management/console/{{$server->id}}">Консоль</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/server-management/players/{{$server->id}}">Игроки</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/server-management/lua/{{$server->id}}">Lua</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="/server-management/errors/{{$server->id}}">Ошибки</a>
-        </li>
-    </ul>
-    <div class="row mt-2">
+@section('secondary_content')
+    <div class="row">
       <div class="col-md-5 col-xl-4">
 
           <div class="card">
@@ -75,7 +60,7 @@
         </div>
       </div>
     </div>
-</div>
+
 <script>
   function copytoclipboard(error)
   {
@@ -98,7 +83,7 @@
       }
       else
       {
-        location.reload();
+        error.parentElement.remove();
       }
     };
   }

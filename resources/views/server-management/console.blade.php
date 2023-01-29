@@ -1,36 +1,20 @@
-@extends('layout')
+@extends('server-management.layout')
 @section('title')
-    Управление серверами
+    Управление серверами | Консоль
 @endsection
-@section('main_content')
-<div class="container">
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link active" href="/server-management/console/{{$server->id}}">Консоль</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/server-management/players/{{$server->id}}">Игроки</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/server-management/lua/{{$server->id}}">Lua</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/server-management/errors/{{$server->id}}">Ошибки</a>
-        </li>
-    </ul>
-    <textarea style="overflow:auto;resize:none" class="w-100" rows="25" readonly="" wrap="off" id="console"></textarea>
-    <form class="row g-3" name="formcommand" onsubmit="consoleCMD({{$server->id}}, document.formcommand.command.value); return false;">
-        <div class="col-auto">
-          @csrf
-          <input type="hidden" name="id" value="{{$server->id}}">
-          <input type="hidden" name="type" value='command'>
-          <input type="text" class="form-control" name="command" value="">
-        </div>
-        <div class="col-auto">
-          <button type="button" class="btn btn-primary mb-3" onclick="consoleCMD({{$server->id}}, document.formcommand.command.value); return false;">Выполнить</button>
-        </div>
-    </form>
-</div>
+@section('secondary_content')
+<textarea style="overflow:auto;resize:none" class="w-100" rows="25" readonly="" wrap="off" id="console"></textarea>
+<form class="row g-3" name="formcommand" onsubmit="consoleCMD({{$server->id}}, document.formcommand.command.value); return false;">
+    <div class="col-auto">
+      @csrf
+      <input type="hidden" name="id" value="{{$server->id}}">
+      <input type="hidden" name="type" value='command'>
+      <input type="text" class="form-control" name="command" value="">
+    </div>
+    <div class="col-auto">
+      <button type="button" class="btn btn-primary mb-3" onclick="consoleCMD({{$server->id}}, document.formcommand.command.value); return false;">Выполнить</button>
+    </div>
+</form>
 <script>
     let tell = 0;
     let id = '{{$server->id}}'
@@ -67,7 +51,7 @@
         };
     }
 
-    setInterval(updateConsole, 2000);
+    setInterval(updateConsole, 1000);
 
     function consoleCMD(server_id, command)
     {
@@ -87,7 +71,5 @@
         }
       };
     }
-
-
 </script>
 @endsection

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('ipport')->unique();
             $table->string('gamemode');
+            $table->integer('author');
             $table->timestamps();
         });
     }
