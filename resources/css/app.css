@@ -99,3 +99,7 @@
     font-size: .75rem;
     text-transform: uppercase;
   }
+  
+  .object-fit-cover {
+    object-fit: cover;
+  }

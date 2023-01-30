@@ -10353,3 +10353,8 @@ textarea.form-control-lg {
     font-size: .75rem;
     text-transform: uppercase;
   }
+  
+  .object-fit-cover {
+    -o-object-fit: cover;
+       object-fit: cover;
+  }

@@ -49,8 +49,12 @@ class ProfileController extends Controller
         if($file)
         {
             $path = $file->store('uploads', 'public');
-            
+
             $img = Image::make(Storage::path('/public/').$path)->fit(128, 128)->save(Storage::path('/public/').$path);
+
+            $canvas = Image::canvas(128, 128, '#ffffff');
+            $canvas->insert(Storage::path('/public/').$path, 'center')->save(Storage::path('/public/').$path);
+            
             if($user->avatar)
             {
                 Storage::disk('public')->delete($user->avatar);
