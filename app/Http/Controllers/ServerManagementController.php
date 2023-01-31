@@ -23,14 +23,15 @@ class ServerManagementController extends Controller
     }
     public function servermanagement_add(Request $request)
     {
-        $this->authorize('add', ServerControl::class);
+        $server = new ServerControl();
+
+        $this->authorize('add', $server);
 
         $valid = $request->validate([
             'ipport' => 'required|min:4|max:100',
             'gamemode' => 'required|min:4|max:100',
         ]);
 
-        $server = new ServerControl();
         $server->ipport = $request->input('ipport');
         $server->gamemode = $request->input('gamemode');
         $server->author = Auth::id();
@@ -41,9 +42,13 @@ class ServerManagementController extends Controller
     }
     public function servermanagement_delete(Request $request)
     {
-        $this->authorize('delete', ServerControl::class, $request->id);
+        $server = ServerControl::findOrFail($request->id);
 
-        ServerControl::destroy($request->id);
+        $this->authorize('delete', $server);
+
+        $server->delete();
+
+        //ServerControl::destroy($request->id);
         return redirect('server-management');
     }
     public function servermanagement_console($id)
@@ -64,20 +69,20 @@ class ServerManagementController extends Controller
         $ip = $request->ip();
         $port = $request->port;
         $server = ServerControl::where('ipport', '=', $ip.':'.$port)->firstOrFail();
-        Storage::disk('local')->makeDirectory($server->id);
+        Storage::disk('local')->makeDirectory('servercontrol/'.$server->id);
         if ($request->newfile === "true")
         {
-            Storage::disk('local')->put($server->id.'/serverlogs.txt', $request->log);
+            Storage::disk('local')->put('servercontrol/'.$server->id.'/serverlogs.txt', $request->log);
         }
         else
         {
             if ($request->log != "")
             {
-                Storage::disk('local')->append($server->id.'/serverlogs.txt', $request->log);
+                Storage::disk('local')->append('servercontrol/'.$server->id.'/serverlogs.txt', $request->log);
             }
         }
 
-        Storage::disk('local')->put($server->id.'/players.txt', $request->players);
+        Storage::disk('local')->put('servercontrol/'.$server->id.'/players.txt', $request->players);
         $errors = json_decode($request->errors, true);
         foreach($errors as $realm=>$error_array)
         {
