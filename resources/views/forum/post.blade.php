@@ -11,71 +11,63 @@
             <li class="breadcrumb-item active" aria-current="page">{{$post->title}}</li>
         </ol>
     </nav>
-    <div class="container-fluid mt-100">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <div class="d-flex w-100 align-items-center">
-                            <img src={{$author->avatar ? asset('/storage/'.$author->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="64" height="64">
-                            <div class="ms-3">
-                                <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$author->name}}</a>
-                                <div class="text-muted small">{{$post->created_at}}</div>
-                            </div>
-                            {{-- <div class="text-muted small me-3 position-absolute end-0">
-                                <div>Member since <strong>01/1/2019</strong></div>
-                                <div><strong>134</strong> posts</div>
-                            </div> --}}
-                        </div>
+
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="d-flex w-100 align-items-center">
+                    <img src={{$author->avatar ? asset('/storage/'.$author->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="96" height="96">
+                    <div class="ms-3">
+                        <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$author->name}}</a>
                     </div>
-                    <div class="card-body">
-                        {!!$post->content!!}
-                    </div>
-                    <div class="card-footer d-flex flex-wrap justify-content-end align-items-center px-0 pt-0 pb-3">
-                        {{-- <div class="px-4 pt-3"> <a href="javascript:void(0)" class="text-muted d-inline-flex align-items-center align-middle" data-abc="true"> <i class="fa fa-heart text-danger"></i>&nbsp; <span class="align-middle">Лайк</span> </a> <span class="text-muted d-inline-flex align-items-center align-middle ml-4"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp; <span class="align-middle">14532</span> </span> </div> --}}
-                        <div class="px-4 pt-3"> <button type="button" class="btn btn-primary"><i class="ion ion-md-create"></i>&nbsp; Ответить</button> </div>
-                    </div>
+                    {{-- <div class="text-muted small me-3 position-absolute end-0">
+                        <div>Member since <strong>01/1/2019</strong></div>
+                        <div><strong>134</strong> posts</div>
+                    </div> --}}
                 </div>
             </div>
+            <div class="card-body ck-content" id='content-' name='content-' author="{{$author->name}}">
+                {!!$post->content!!}
+            </div>
+            <div class="card-footer d-flex flex-wrap justify-content-between align-items-center">
+                <div class="text-muted small">📅 {{$post->created_at}}</div>
+                <button type="button" class="btn btn-primary" onclick="comment(this.value);" value="">Ответить</button>
+            </div>
         </div>
+
         @foreach ($comments as $key => $comment)
             <div class="card d-flex flex-row mb-4">
-                <div class="card-header d-flex align-items-center">
-                    <img src={{$users[$key]->avatar ? asset('/storage/'.$users[$key]->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="64" height="64">
-                    <div class="ms-3">
-                        <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$users[$key]->name}}</a>
-                        <div class="text-muted small">{{$comment->created_at}}</div>
-                    </div>
+                <div class="card-header d-flex flex-column align-items-center justify-content-center w-25">
+                    <img src={{$users[$key]->avatar ? asset('/storage/'.$users[$key]->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="96" height="96">
+                    <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$users[$key]->name}}</a>
                 </div>
-                <div class="card-body">
-                    {!!$comment->content!!}
-                    <div class="d-flex flex-row-reverse">
-                        <form action='replycomment' method='POST' name='replycomment' id='replycomment' enctype="multipart/form-data" onsubmit="return this.replycomment.disabled=true;">
-                            @csrf
-                            <input type="hidden" name="id" id="id" value="{{$key}}">
-                            <input class="btn btn-primary mt-2 ms-2" name="submit" type="submit" value="Ответить">
-                        </form>
+                <div class="card-body d-flex flex-column justify-content-between w-75">
+                    <div id='content-{{$key}}' name='content-{{$key}}' author="{{$users[$key]->name}}" class="ck-content">
+                        {!!$comment->content!!}
+                    </div>
+                    <hr>
+                    <div class="d-flex align-items-center justify-content-between flex-wrap">
+                        <div class="text-muted small me-auto">📅 {{$comment->created_at}}</div>
                         @can('delete', $comment)
                         <form action='deletecomment' method='POST' name='deletecomment' id='deletecomment' enctype="multipart/form-data" onsubmit="return this.deletecomment.disabled=true;">
                             @csrf
                             <input type="hidden" name="id" id="id" value="{{$comment->id}}">
-                            <input class="btn btn-danger mt-2 ms-2" name="submit" type="submit" value="Удалить">
+                            <input class="btn btn-danger ms-2" name="submit" type="submit" value="Удалить">
                         </form>
                         @endcan
-                </div>
+                        <button class="btn btn-primary ms-2" name="reply" id="reply" type="button" onclick="comment(this.value);" value="{{$key}}">Ответить</button>
+                    </div>
                 </div>
             </div>
         @endforeach
         
 
         <div class="card d-flex flex-row mb-4">
-            <div class="card-header d-flex align-items-center">
-                <img src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="64" height="64">
-                <div class="ms-3">
-                    <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{Auth::user()->name}}</a>
-                </div>
+            <div class="card-header d-flex flex-column align-items-center justify-content-center w-25">
+                <img src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="96" height="96">
+                <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{Auth::user()->name}}</a>
             </div>
-            <div class="card-body">
+            <div class="card-body w-75">
                 <form action='addcomment' method='POST' name='addcomment' id='addcomment' enctype="multipart/form-data" onsubmit="return this.addcomment.disabled=true;">
                     @csrf
                     <input type="hidden" name="id" id="id" value="{{$id}}">
@@ -90,6 +82,7 @@
 </div>
 <script src="{{asset('ckeditor5-build-classic/ckeditor.js')}}"></script>
 <script>
+    var myeditor;
     class MyUploadAdapter {
         constructor( loader ) {
             this.loader = loader;
@@ -161,8 +154,21 @@
         .create( document.querySelector( '#editor' ), {
             extraPlugins: [ MyCustomUploadAdapterPlugin ],
         } )
+        .then( editor => {
+            myeditor = editor;
+        } )
         .catch( error => {
             console.log( error );
         } );
+
+    function comment(id)
+    {
+        var elem = document.querySelector( '#content-' + id );
+        const viewFragment = myeditor.data.processor.toView( "<blockquote>" + elem.attributes.author.value + ":\n" + elem.innerHTML + "</blockquote>");
+        const modelFragment = myeditor.data.toModel( viewFragment );
+        myeditor.model.insertContent( modelFragment );
+
+        document.addcomment.scrollIntoView();
+    }
 </script>
 @endsection

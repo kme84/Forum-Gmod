@@ -126,14 +126,14 @@ class ForumController extends Controller
         ]);
         
         $content = $request->input('editor');
-        $find_pattern = '<img src=\"https?\:\/\/g-vector\.ru\/storage\/temp\/([a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">';
+        $find_pattern = '<img src=\"\/storage\/temp\/([a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">'; // '<img src=\"https?\:\/\/g-vector\.ru\/storage\/temp\/([a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">'
         preg_match_all($find_pattern, $content, $matches);
 
         foreach ($matches[1] as $value) {
             Storage::disk('public')->move('temp/' . $value, 'uploads/' . $value);
         }
-        $replace_patternt = '/<img src=\"https?\:\/\/g-vector\.ru\/storage\/temp\//';
-        $content = preg_replace($replace_patternt, '<img class="img-fluid" src="http://g-vector.ru/storage/uploads/', $content);
+        $replace_patternt = '/<img src=\"\/storage\/temp\//'; // '/<img src=\"https?\:\/\/g-vector\.ru\/storage\/temp\//'
+        $content = preg_replace($replace_patternt, '<img class="img-fluid" src="/storage/uploads/', $content);
 
         
         $post->topic = $request->input('id');
@@ -155,7 +155,7 @@ class ForumController extends Controller
         $post = Posts::findOrFail($request->id);
         $this->authorize('delete', $post);
 
-        $find_pattern = '<img class="img-fluid" src=\"https?\:\/\/g-vector\.ru\/storage\/(uploads\/[a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">';
+        $find_pattern = '<img class="img-fluid" src=\"\/storage\/(uploads\/[a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">';
         preg_match_all($find_pattern, $post->content, $matches);
 
         foreach ($matches[1] as $value) {
@@ -179,14 +179,14 @@ class ForumController extends Controller
         ]);
         
         $content = $request->input('editor');
-        $find_pattern = '<img src=\"https?\:\/\/g-vector\.ru\/storage\/temp\/([a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">';
+        $find_pattern = '<img src=\"\/storage\/temp\/([a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">';
         preg_match_all($find_pattern, $content, $matches);
 
         foreach ($matches[1] as $value) {
             Storage::disk('public')->move('temp/' . $value, 'uploads/' . $value);
         }
-        $replace_patternt = '/<img src=\"https?\:\/\/g-vector\.ru\/storage\/temp\//';
-        $content = preg_replace($replace_patternt, '<img class="img-fluid" src="http://g-vector.ru/storage/uploads/', $content);
+        $replace_patternt = '/<img src=\"\/storage\/temp\//';
+        $content = preg_replace($replace_patternt, '<img class="img-fluid" src="/storage/uploads/', $content);
 
         
         $comment->post = $request->input('id');
@@ -209,6 +209,13 @@ class ForumController extends Controller
 
         $comment = Comment::findOrFail($request->input('id'));
 
+        $find_pattern = '<img class="img-fluid" src=\"\/storage\/(uploads\/[a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">';
+        preg_match_all($find_pattern, $comment->content, $matches);
+
+        foreach ($matches[1] as $value) {
+            Storage::disk('public')->delete($value);
+        }
+
         $post_id = $comment->post;
 
         $comment->delete();
@@ -220,6 +227,6 @@ class ForumController extends Controller
     {
         $file = $request->file('upload');
         $path = $file->store('temp', 'public');
-        return json_encode(['url' => asset('storage/'.$path)]);
+        return json_encode(['url' => '/storage/'.$path]); // asset('storage/'.$path)
     }
 }

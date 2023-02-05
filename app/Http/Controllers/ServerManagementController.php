@@ -124,11 +124,11 @@ class ServerManagementController extends Controller
             'tell' => 'required|min:1|max:20',
         ]);
         $id = $request->id;
-        if (Storage::disk('local')->missing($id.'/serverlogs.txt'))
+        if (Storage::disk('local')->missing('servercontrol/'.$id.'/serverlogs.txt'))
         {
             return ['rows' => "", 'tell' => 0];
         }
-        $path = Storage::disk('local')->path($id.'/serverlogs.txt');
+        $path = Storage::disk('local')->path('servercontrol/'.$id.'/serverlogs.txt');
         $fp = fopen($path, "r");
         if ($request->tell > filesize($path))
         {
