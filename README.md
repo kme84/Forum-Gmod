@@ -1,4 +1,4 @@
-<p align="center"><a href="#" target="_blank"><img src="https://raw.githubusercontent.com/kme84/Forum-Gmod/45618db6260c261d4047da44e8cb1a75428d5ef9/forum-gmod-logo.svg" width="400"></a></p>
+<p align="center"><a href="#" target="_blank"><img src="https://raw.githubusercontent.com/kme84/Forum-Gmod/main/gmod-forum-logo.png" width="400"></a></p>
 
 ## О проекте
 
