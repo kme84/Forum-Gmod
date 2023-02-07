@@ -146,7 +146,8 @@ class ServerManagementController extends Controller
         fclose($fp);
         
         $rows = $rows ? $rows : '';
-        return ['rows' => $rows, 'tell' => $tell];
+        $arr = mb_convert_encoding(['rows' => $rows, 'tell' => $tell], "UTF-8", "auto");
+        return $arr;
     }
     public function servermanagement_console_runcommand(Request $request)
     {

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('topic');
             $table->string('title');
             $table->text('content');
+            $table->integer('author');
             $table->timestamps();
         });
     }

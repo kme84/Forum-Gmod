@@ -15,6 +15,8 @@ use App\Models\Comment;
 
 class ForumController extends Controller
 {
+    private string $path_files = 'uploads/forum/';
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -35,7 +37,6 @@ class ForumController extends Controller
             'name' => 'required|min:3|max:25',
         ]);
 
-        
         $chapter->name = $request->input('name');
 
         $chapter->save();
@@ -53,7 +54,16 @@ class ForumController extends Controller
         $chapter = Chapters::findOrFail($request->input('id'));
         $this->authorize('delete', $chapter);
 
-        Topics::where('chapter', $request->input('id'))->delete();
+        foreach (Topics::where('chapter', $chapter->id)->cursor() as $topic) {
+            foreach (Posts::where('topic', $topic->id)->cursor() as $post) {
+                foreach (Comment::where('post', $post->id)->cursor() as $comment) {
+                    $comment->delete();
+                }
+                $post->delete();
+            }
+            $topic->delete();
+        }
+        Storage::disk('public')->deleteDirectory($this->path_files . $chapter->id);
 
         $chapter->delete();
 
@@ -88,6 +98,15 @@ class ForumController extends Controller
         $topic = Topics::findOrFail($request->input('id'));
         $this->authorize('delete', [$topic, $topic->chapter]);
 
+        foreach (Posts::where('topic', $topic->id)->cursor() as $post) {
+            foreach (Comment::where('post', $post->id)->cursor() as $comment) {
+                $comment->delete();
+            }
+            $post->delete();
+        }
+
+        Storage::disk('public')->deleteDirectory($this->path_files . $topic->chapter . '/' . $topic->id);
+
         $topic->delete();
 
         return redirect('forum');
@@ -115,7 +134,6 @@ class ForumController extends Controller
 
     public function forum_addpost(Request $request)
     {
-        //$data = str_replace( '&', '&amp;', $data );
         $post = new Posts();
         $this->authorize('add', $post);
 
@@ -124,23 +142,27 @@ class ForumController extends Controller
             'name' => 'required|min:3|max:25',
             'editor' => 'required|min:10|max:1000',
         ]);
+
+        $topic = Topics::findOrFail($request->input('id'));
+
+        $post->topic = $topic->id;
+        $post->title = $request->input('name');
+        $post->content = '';
+        $post->author = Auth::id();
+        $post->save();
         
         $content = $request->input('editor');
-        $find_pattern = '<img src=\"\/storage\/temp\/([a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">'; // '<img src=\"https?\:\/\/g-vector\.ru\/storage\/temp\/([a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">'
+        $find_pattern = '<img src=\"\/storage\/temp\/([a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">';
         preg_match_all($find_pattern, $content, $matches);
 
+        $path_save = $this->path_files . $topic->chapter . '/' . $topic->id . '/' . $post->id . '/';
         foreach ($matches[1] as $value) {
-            Storage::disk('public')->move('temp/' . $value, 'uploads/' . $value);
+            Storage::disk('public')->move('temp/' . $value, $path_save . $value);
         }
-        $replace_patternt = '/<img src=\"\/storage\/temp\//'; // '/<img src=\"https?\:\/\/g-vector\.ru\/storage\/temp\//'
-        $content = preg_replace($replace_patternt, '<img class="img-fluid" src="/storage/uploads/', $content);
+        $replace_patternt = '/<img src=\"\/storage\/temp\//';
+        $content = preg_replace($replace_patternt, '<img class="img-fluid" src="/storage/' . $path_save, $content);
 
-        
-        $post->topic = $request->input('id');
-        $post->title = $request->input('name');
         $post->content = $content;
-        $post->author = Auth::id();
-
         $post->save();
 
         return redirect('forum/'.$post->topic);
@@ -155,21 +177,21 @@ class ForumController extends Controller
         $post = Posts::findOrFail($request->id);
         $this->authorize('delete', $post);
 
-        $find_pattern = '<img class="img-fluid" src=\"\/storage\/(uploads\/[a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">';
-        preg_match_all($find_pattern, $post->content, $matches);
+        $topic = Topics::findOrFail($post->topic);
 
-        foreach ($matches[1] as $value) {
-            Storage::disk('public')->delete($value);
+        foreach (Comment::where('post', $post->id)->cursor() as $comment) {
+            $comment->delete();
         }
-        $topic = $post->topic;
+
+        Storage::disk('public')->deleteDirectory($this->path_files . $topic->chapter . '/' . $topic->id . '/' . $post->id);
+
         $post->delete();
 
-        return redirect('forum/'.$topic);
+        return redirect('forum/'.$topic->id);
     }
 
     public function forum_addcomment(Request $request)
     {
-        //$data = str_replace( '&', '&amp;', $data );
         $comment = new Comment();
         $this->authorize('add', $comment);
 
@@ -177,22 +199,28 @@ class ForumController extends Controller
             'id' => 'required',
             'editor' => 'required|min:10|max:1000',
         ]);
+
+        $post = Posts::findOrFail($request->input('id'));
+        $topic = Topics::findOrFail($post->topic);
+
+        $comment->post = $post->id;
+        $comment->content = '';
+        $comment->author = Auth::id();
+        $comment->save();
         
         $content = $request->input('editor');
         $find_pattern = '<img src=\"\/storage\/temp\/([a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">';
         preg_match_all($find_pattern, $content, $matches);
 
+        $path_save = $this->path_files . $topic->chapter . '/' . $topic->id . '/' . $post->id . '/' . $comment->id . '/';
         foreach ($matches[1] as $value) {
-            Storage::disk('public')->move('temp/' . $value, 'uploads/' . $value);
+            Storage::disk('public')->move('temp/' . $value, $path_save . $value);
         }
         $replace_patternt = '/<img src=\"\/storage\/temp\//';
-        $content = preg_replace($replace_patternt, '<img class="img-fluid" src="/storage/uploads/', $content);
+        $content = preg_replace($replace_patternt, '<img class="img-fluid" src="/storage/' . $path_save, $content);
 
         
-        $comment->post = $request->input('id');
         $comment->content = $content;
-        $comment->author = Auth::id();
-
         $comment->save();
 
         return redirect('forum/post/'.$comment->post);
@@ -208,25 +236,20 @@ class ForumController extends Controller
         ]);
 
         $comment = Comment::findOrFail($request->input('id'));
+        $post = Posts::findOrFail($comment->post);
+        $topic = Topics::findOrFail($post->topic);
 
-        $find_pattern = '<img class="img-fluid" src=\"\/storage\/(uploads\/[a-zA-Z0-9]+\.[a-zA-Z0-9]+)\">';
-        preg_match_all($find_pattern, $comment->content, $matches);
-
-        foreach ($matches[1] as $value) {
-            Storage::disk('public')->delete($value);
-        }
-
-        $post_id = $comment->post;
+        Storage::disk('public')->deleteDirectory($this->path_files . $topic->chapter . '/' . $topic->id . '/' . $post->id . '/' . $comment->id);
 
         $comment->delete();
 
-        return redirect('forum/post/'.$post_id);
+        return redirect('forum/post/'.$post->id);
     }
 
     public function editor_image_upload(Request $request)
     {
         $file = $request->file('upload');
         $path = $file->store('temp', 'public');
-        return json_encode(['url' => '/storage/'.$path]); // asset('storage/'.$path)
+        return json_encode(['url' => '/storage/'.$path]);
     }
 }
