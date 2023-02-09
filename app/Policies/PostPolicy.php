@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Posts;
+use App\Models\Post;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class PostsPolicy
+class PostPolicy
 {
     use HandlesAuthorization;
 
@@ -27,12 +27,12 @@ class PostsPolicy
         }
     }
 
-    public function add(User $user, Posts $posts, int $topic_id)
+    public function add(User $user, Post $posts, int $topic_id)
     {
         return $user->id === $posts->author;
     }
 
-    public function delete(User $user, Posts $posts)
+    public function delete(User $user, Post $posts)
     {
         return $user->id === $posts->author;
     }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\User;
-use App\Models\Servers;
+use App\Models\Server;
 
 class MainController extends Controller
 {
@@ -21,7 +21,7 @@ class MainController extends Controller
     
     public function main()
     {
-        return view('main', ['servers' => Servers::all()]);
+        return view('main', ['servers' => Server::all()]);
     }
     
     public function users()

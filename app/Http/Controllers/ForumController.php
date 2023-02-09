@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
-use App\Models\Chapters;
-use App\Models\Topics;
-use App\Models\Posts;
+use App\Models\Chapter;
+use App\Models\Topic;
+use App\Models\Post;
 use App\Models\Comment;
 
 
@@ -24,12 +24,12 @@ class ForumController extends Controller
     
     public function forum()
     {
-        return view('forum', ['chapters' => Chapters::all(), 'topics' => Topics::all()]);
+        return view('forum', ['chapters' => Chapter::all(), 'topics' => Topic::all()]);
     }
 
     public function forum_addchapter(Request $request)
     {
-        $chapter = new Chapters();
+        $chapter = new Chapter();
 
         $this->authorize('add', $chapter);
 
@@ -51,18 +51,13 @@ class ForumController extends Controller
             'id' => 'required',
         ]);
 
-        $chapter = Chapters::findOrFail($request->input('id'));
+        $chapter = Chapter::findOrFail($request->input('id'));
         $this->authorize('delete', $chapter);
 
-        foreach (Topics::where('chapter', $chapter->id)->cursor() as $topic) {
-            foreach (Posts::where('topic', $topic->id)->cursor() as $post) {
-                foreach (Comment::where('post', $post->id)->cursor() as $comment) {
-                    $comment->delete();
-                }
-                $post->delete();
-            }
-            $topic->delete();
-        }
+        Comment::where('chapter', $chapter->id)->delete();
+        Post::where('chapter', $chapter->id)->delete();
+        Topic::where('chapter', $chapter->id)->delete();
+
         Storage::disk('public')->deleteDirectory($this->path_files . $chapter->id);
 
         $chapter->delete();
@@ -78,7 +73,7 @@ class ForumController extends Controller
             'name' => 'required|min:3|max:25',
         ]);
 
-        $topic = new Topics();
+        $topic = new Topic();
         $this->authorize('add', [$topic, $request->input('id')]);
 
         $topic->chapter = $request->input('id');
@@ -95,15 +90,11 @@ class ForumController extends Controller
             'id' => 'required',
         ]);
 
-        $topic = Topics::findOrFail($request->input('id'));
+        $topic = Topic::findOrFail($request->input('id'));
         $this->authorize('delete', [$topic, $topic->chapter]);
 
-        foreach (Posts::where('topic', $topic->id)->cursor() as $post) {
-            foreach (Comment::where('post', $post->id)->cursor() as $comment) {
-                $comment->delete();
-            }
-            $post->delete();
-        }
+        Comment::where('topic', $topic->id)->delete();
+        Post::where('topic', $topic->id)->delete();
 
         Storage::disk('public')->deleteDirectory($this->path_files . $topic->chapter . '/' . $topic->id);
 
@@ -114,15 +105,15 @@ class ForumController extends Controller
 
     public function forum_topic($id)
     {
-        $topic = Topics::findOrFail($id);
-        $posts = Posts::where('topic', $id)->get();
+        $topic = Topic::findOrFail($id);
+        $posts = Post::where('topic', $id)->get();
         return view('forum/topic', ['topic' => $topic, 'posts' => $posts]);
     }
 
     public function forum_post($id)
     {
-        $post = Posts::findOrFail($id);
-        $topic = Topics::findOrFail($post->topic);
+        $post = Post::findOrFail($id);
+        $topic = Topic::findOrFail($post->topic);
         $author = User::findOrFail($post->author);
         $comments = Comment::where('post', $id)->get();
         $users = array();
@@ -134,17 +125,18 @@ class ForumController extends Controller
 
     public function forum_addpost(Request $request)
     {
-        $post = new Posts();
+        $post = new Post();
         $this->authorize('add', $post);
 
         $valid = $request->validate([
             'id' => 'required',
             'name' => 'required|min:3|max:25',
-            'editor' => 'required|min:10|max:1000',
+            'editor' => 'required|min:10|max:16384',
         ]);
 
-        $topic = Topics::findOrFail($request->input('id'));
+        $topic = Topic::findOrFail($request->input('id'));
 
+        $post->chapter = $topic->chapter;
         $post->topic = $topic->id;
         $post->title = $request->input('name');
         $post->content = '';
@@ -174,14 +166,12 @@ class ForumController extends Controller
             'id' => 'required',
         ]);
 
-        $post = Posts::findOrFail($request->id);
+        $post = Post::findOrFail($request->id);
         $this->authorize('delete', $post);
 
-        $topic = Topics::findOrFail($post->topic);
+        $topic = Topic::findOrFail($post->topic);
 
-        foreach (Comment::where('post', $post->id)->cursor() as $comment) {
-            $comment->delete();
-        }
+        Comment::where('post', $post->id)->delete();
 
         Storage::disk('public')->deleteDirectory($this->path_files . $topic->chapter . '/' . $topic->id . '/' . $post->id);
 
@@ -197,12 +187,14 @@ class ForumController extends Controller
 
         $valid = $request->validate([
             'id' => 'required',
-            'editor' => 'required|min:10|max:1000',
+            'editor' => 'required|min:10|max:8192',
         ]);
 
-        $post = Posts::findOrFail($request->input('id'));
-        $topic = Topics::findOrFail($post->topic);
+        $post = Post::findOrFail($request->input('id'));
+        $topic = Topic::findOrFail($post->topic);
 
+        $comment->chapter = $post->chapter;
+        $comment->topic = $post->topic;
         $comment->post = $post->id;
         $comment->content = '';
         $comment->author = Auth::id();
@@ -236,8 +228,8 @@ class ForumController extends Controller
         ]);
 
         $comment = Comment::findOrFail($request->input('id'));
-        $post = Posts::findOrFail($comment->post);
-        $topic = Topics::findOrFail($post->topic);
+        $post = Post::findOrFail($comment->post);
+        $topic = Topic::findOrFail($post->topic);
 
         Storage::disk('public')->deleteDirectory($this->path_files . $topic->chapter . '/' . $topic->id . '/' . $post->id . '/' . $comment->id);
 

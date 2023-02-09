@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Servers;
+use App\Models\Chapter;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ServersPolicy
+class ChapterPolicy
 {
     use HandlesAuthorization;
 
@@ -19,18 +19,14 @@ class ServersPolicy
     {
         //
     }
-
-    public function view(User $user, Servers $servers)
+    
+    // Может ли пользователь добавить раздел
+    public function add(User $user, Chapter $chapter)
     {
         return $user->role === 'admin';
     }
-
-    public function add(User $user, Servers $servers)
-    {
-        return $user->role === 'admin';
-    }
-
-    public function delete(User $user, Servers $servers)
+    // Может ли пользователь удалить раздел
+    public function delete(User $user, Chapter $chapters)
     {
         return $user->role === 'admin';
     }

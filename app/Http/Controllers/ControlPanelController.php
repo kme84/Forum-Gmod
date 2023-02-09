@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 use Intervention\Image\Facades\Image;
 
-use App\Models\Servers;
+use App\Models\Server;
 
 
 class ControlPanelController extends Controller
@@ -42,7 +42,7 @@ class ControlPanelController extends Controller
     }
     public function servers()
     {
-        $servers = new Servers();
+        $servers = new Server();
         $this->authorize('view', $servers);
         // if (Gate::denies('view', $servers)) {
         //     abort(403);
@@ -52,7 +52,7 @@ class ControlPanelController extends Controller
     public function servers_add(Request $request)
     {
 
-        $server = new Servers();
+        $server = new Server();
 
         $this->authorize('add', $server);
 
@@ -84,7 +84,7 @@ class ControlPanelController extends Controller
             'id' => 'required',
         ]);
 
-        $server = Servers::findOrFail($request->id);
+        $server = Server::findOrFail($request->id);
 
         $this->authorize('delete', $server);
 

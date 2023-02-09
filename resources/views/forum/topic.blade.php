@@ -10,7 +10,7 @@
             <li class="breadcrumb-item active" aria-current="page">{{$topic->name}}</li>
         </ol>
     </nav>
-    @can('add', [new App\Models\Posts(), $topic->id])
+    @can('add', [new App\Models\Post(), $topic->id])
     <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddPostModal">Добавить обсуждение</button>
     @endcan
     @if ($errors->any())

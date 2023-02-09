@@ -19,14 +19,14 @@
       <li class="breadcrumb-item active" aria-current="page">Форум</li>
     </ol>
   </nav>
-  @can('add', new App\Models\Chapters())
+  @can('add', new App\Models\Chapter())
   <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddChapterModal">Добавить раздел</button>
   @endcan
   @foreach ($chapters as $chapter)
   <div class="my-3 p-3 bg-body rounded shadow-sm">
     <h6 class="border-bottom pb-2 mb-0 d-flex justify-content-between">
       <span>{{$chapter->name}}</span>
-      @if (Auth::user()->can('delete', $chapter) || Auth::user()->can('add', [new App\Models\Topics(), $chapter->id]))
+      @if (Auth::user()->can('delete', $chapter) || Auth::user()->can('add', [new App\Models\Topic(), $chapter->id]))
       <div class="dropdown show">
         <a href="#" data-bs-toggle="dropdown" data-display="static">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
@@ -36,7 +36,7 @@
             </svg>
         </a>
         <div class="dropdown-menu dropdown-menu-right">
-            @can('add', [new App\Models\Topics(), $chapter->id])
+            @can('add', [new App\Models\Topic(), $chapter->id])
             <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#AddTopicModal" onclick="addtopic.id.value={{$chapter->id}}">Добавить тему</button>
             @endcan
             @can('delete', $chapter)
