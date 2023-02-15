@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\ServerControl;
 use App\Models\ServerError;
 use App\Models\ServerCommand;
+use App\Models\Task;
+use App\Models\User;
 
 class ServerManagementController extends Controller
 {
@@ -227,6 +229,54 @@ class ServerManagementController extends Controller
     {
         $error = ServerError::findOrFail($request->input('id'));
         $error->delete();
+        
+        return response('', 200)
+        ->header('Content-Type', 'text/plain');
+    }
+    public function servermanagement_task_add(Request $request)
+    {
+        $valid = $request->validate([
+            'server' => 'required',
+            'title' => 'required|min:4|max:256',
+            'description' => 'required|min:4|max:512',
+            'priority' => 'required|digits_between:1,3',
+        ]);
+
+        $server = ServerControl::findOrFail($request->input('server'));
+        $task = new Task();
+        $task->server = $server->id;
+        $task->title = $request->input('title');
+        $task->description = $request->input('description');
+        $task->status = 1;
+        $task->author = Auth::id();
+        $task->priority = $request->input('priority');
+        $task->save();
+        
+        return redirect('server-management/tasks/'.$server->id);
+    }
+    public function servermanagement_tasks($id)
+    {
+        $server = ServerControl::findOrFail($id);
+
+        $this->authorize('view_errors', $server);
+
+        $tasks = Task::where('server', '=', $server->id)->get();
+        $priorities = array(1 => 'Низкий', 2 => 'Средний', 3 => 'Высокий');
+        return view('server-management/tasks', ['server' => $server, 'tasks' => $tasks, 'users' => User::all(), 'priorities' => $priorities]);
+    }
+    public function servermanagement_task_delete(Request $request)
+    {
+        $task = Task::findOrFail($request->input('id'));
+        $task->delete();
+        
+        return response('', 200)
+        ->header('Content-Type', 'text/plain');
+    }
+    public function servermanagement_task_change(Request $request)
+    {
+        $task = Task::findOrFail($request->input('id'));
+        $task->status = $task->status == 2 ? 1 : 2;
+        $task->save();
         
         return response('', 200)
         ->header('Content-Type', 'text/plain');

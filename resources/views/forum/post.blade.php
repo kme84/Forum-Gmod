@@ -80,6 +80,7 @@
         
     </div>
 </div>
+@push('scripts')
 <script src="{{asset('ckeditor5-build-classic/ckeditor.js')}}"></script>
 <script>
     var myeditor;
@@ -149,7 +150,8 @@
             return new MyUploadAdapter( loader );
         };
     }
-
+    document.addEventListener('DOMContentLoaded', () =>
+    {
     ClassicEditor
         .create( document.querySelector( '#editor' ), {
             extraPlugins: [ MyCustomUploadAdapterPlugin ],
@@ -160,7 +162,7 @@
         .catch( error => {
             console.log( error );
         } );
-
+    });
     function comment(id)
     {
         var elem = document.querySelector( '#content-' + id );
@@ -171,4 +173,5 @@
         document.addcomment.scrollIntoView();
     }
 </script>
+@endpush
 @endsection

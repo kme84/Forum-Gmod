@@ -98,8 +98,9 @@
         </div>
     </div>
 </div>
+@push('scripts')
 <script src="{{asset('ckeditor5-build-classic/ckeditor.js')}}"></script>
-<script>
+<script defer>
     class MyUploadAdapter {
         constructor( loader ) {
             this.loader = loader;
@@ -166,7 +167,8 @@
             return new MyUploadAdapter( loader );
         };
     }
-
+    document.addEventListener('DOMContentLoaded', () =>
+    {
     ClassicEditor
         .create( document.querySelector( '#editor' ), {
             extraPlugins: [ MyCustomUploadAdapterPlugin ],
@@ -174,5 +176,7 @@
         .catch( error => {
             console.log( error );
         } );
+    });
 </script>
+@endpush
 @endsection

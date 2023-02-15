@@ -15,6 +15,7 @@
       <button type="button" class="btn btn-primary mb-3" onclick="consoleCMD({{$server->id}}, document.formcommand.command.value); return false;">Выполнить</button>
     </div>
 </form>
+@push('scripts')
 <script>
     let tell = 0;
     let id = '{{$server->id}}'
@@ -72,4 +73,5 @@
       };
     }
 </script>
+@endpush
 @endsection

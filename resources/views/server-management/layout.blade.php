@@ -21,6 +21,9 @@
           <a class="nav-link {{Request::is('server-management/errors/'.$server->id) ? "active" : "" }}" href="/server-management/errors/{{$server->id}}">Ошибки</a>
         </li>
         @endcan
+        <li class="nav-item">
+          <a class="nav-link {{Request::is('server-management/tasks/'.$server->id) ? "active" : "" }}" href="/server-management/tasks/{{$server->id}}">Задачи</a>
+        </li>
     </ul>
     @yield('secondary_content')
 </div>

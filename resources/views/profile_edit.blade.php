@@ -150,9 +150,11 @@
     </div>
 
 </div>
+@push('scripts')
 <script>
     uploadAvatar.addEventListener('change', (e) => {
         avatarImage.src = (window.URL ? URL : webkitURL).createObjectURL(uploadAvatar.files[0]);
     });
 </script>
+@endpush
 @endsection

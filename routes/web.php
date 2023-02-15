@@ -62,6 +62,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/server-management/lua/{id}', 'servermanagement_lua');
         Route::get('/server-management/errors/{id}', 'servermanagement_errors');
         Route::post('/server-management/error-delete', 'servermanagement_error_delete');
+        Route::post('/server-management/task-add', 'servermanagement_task_add');
+        Route::post('/server-management/task-delete', 'servermanagement_task_delete');
+        Route::get('/server-management/tasks/{id}', 'servermanagement_tasks');
+        Route::post('/server-management/task-change', 'servermanagement_task_change');
     });
 });
 

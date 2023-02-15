@@ -13,6 +13,7 @@
       <button type="button" class="btn btn-primary mb-3" onclick="sendLUA({{$server->id}}, document.formlua.command.value); return false;">Выполнить</button>
     </div>
 </form>
+@push('scripts')
 <script>
   let tell = 0;
   let id = '{{$server->id}}'
@@ -70,4 +71,5 @@
     };
   }
 </script>
+@endpush
 @endsection
