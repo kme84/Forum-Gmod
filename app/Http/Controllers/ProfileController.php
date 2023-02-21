@@ -23,13 +23,13 @@ class ProfileController extends Controller
         $user = User::findOrFail($id);
         return view('profile', ['user' => $user]);
     }
-    
+
     public function profile_edit($id)
     {
         $user = User::findOrFail($id);
         return view('profile_edit', ['user' => $user]);
     }
-    
+
     public function profile_edit_public(Request $request)
     {
         $valid = $request->validate([
@@ -52,9 +52,9 @@ class ProfileController extends Controller
 
             $img = Image::make(Storage::path('/public/').$path)->fit(128, 128)->save(Storage::path('/public/').$path);
 
-            $canvas = Image::canvas(128, 128, '#ffffff');
-            $canvas->insert(Storage::path('/public/').$path, 'center')->save(Storage::path('/public/').$path);
-            
+            // $canvas = Image::canvas(128, 128, '#ffffff');
+            // $canvas->insert(Storage::path('/public/').$path, 'center')->save(Storage::path('/public/').$path);
+
             if($user->avatar)
             {
                 Storage::disk('public')->delete($user->avatar);
@@ -111,7 +111,7 @@ class ProfileController extends Controller
             }
         }
 
-        
+
         return redirect('profile/'.$request->input('id').'/edit');
     }
 }

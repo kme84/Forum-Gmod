@@ -23,7 +23,6 @@
         </div>
     @endif
     @foreach ($posts as $post)
-
     <div class="d-flex text-muted pt-3">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-right-fill me-2 flex-shrink-0" viewBox="0 0 16 16">
         <path d="M14 0a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
@@ -41,6 +40,7 @@
                 </svg>
             </a>
             <div class="dropdown-menu dropdown-menu-right">
+                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#EditPostModal" onclick="editpost.id.value={{$post->id}};editpost.name.value='{{$post->title}}';editpost.ord.value={{$post->ord}}">Изменить пост</button>
               <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#RemovePostModal" onclick="removepost.id.value={{$post->id}}">Удалить пост</button>
             </div>
           </div>
@@ -53,54 +53,44 @@
 
     @endforeach
 </div>
-<!-- Modal addpost -->
-<div class="modal fade" id="AddPostModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-<div class="modal-dialog modal-xl">
-    <div class="modal-content">
-    <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Добавление обсуждения</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
-    <div class="modal-body">
-        <form class="d-grid gap-3" id="addpost" name="addpost" method="post" action="addpost" enctype="multipart/form-data" onsubmit="return this.addpost.disabled=true;">
-            @csrf
-            <input type="hidden" name="id" id="id" value="{{$topic->id}}">
-            <input type="text" name="name" id="name" placeholder="Название обсуждения" class="form-control">
-            <textarea name="editor" id="editor"></textarea>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-        <input class="btn btn-success" name="submit" type="submit" form="addpost" value="Добавить">
-    </div>
-    </div>
-</div>
-</div>
-<!-- Modal deletepost -->
-<div class="modal fade" id="RemovePostModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Вы действительно хотите удалить тему?</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <form class="d-grid gap-3" id="removepost" method="post" action="deletepost" onsubmit="return this.removepost.disabled=true;">
-                @csrf
-                <input type="hidden" name="id" id="id">
-                <p>Вы действительно хотите удалить тему?</p>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-            <input class="btn btn-danger" name="removepost" type="submit" form="removepost" value="Удалить">
-        </div>
-        </div>
-    </div>
-</div>
+<x-modal modal-id='AddPostModal' form-id='addpost' action='addpost' method='post' enctype="multipart/form-data">
+    <x-slot:title class='modal-lg'>
+        Добавление обсуждения
+    </x-slot>
+    <input type="hidden" name="id" id="id" value="{{$topic->id}}">
+    <input type="text" name="name" id="name" placeholder="Название обсуждения" class="form-control">
+    <textarea name="editor" id="editor"></textarea>
+    <x-slot:button class='btn-success'>
+        Добавить
+    </x-slot>
+</x-modal>
+
+<x-modal modal-id='EditPostModal' form-id='editpost' action='editpost' method='post'>
+    <x-slot:title>
+        Изменение обсуждения
+    </x-slot>
+    <input type="hidden" name="id" id="id">
+    <input type="text" name="name" id="name" placeholder="Название обсуждения" class="form-control">
+    <input type="number" name="ord" id="ord" placeholder="Порядок отображения" class="form-control">
+    <x-slot:button class='btn-success'>
+        Изменить
+    </x-slot>
+</x-modal>
+
+<x-modal modal-id='RemovePostModal' form-id='removepost' action='deletepost' method='post'>
+    <x-slot:title>
+        Удаление обсуждения
+    </x-slot>
+    <input type="hidden" name="id" id="id">
+    <p>Вы действительно хотите удалить тему?</p>
+    <x-slot:button class='btn-success'>
+        Удалить
+    </x-slot>
+</x-modal>
+
 @push('scripts')
 <script src="{{asset('ckeditor5-build-classic/ckeditor.js')}}"></script>
-<script defer>
+<script type="text/javascript">
     class MyUploadAdapter {
         constructor( loader ) {
             this.loader = loader;

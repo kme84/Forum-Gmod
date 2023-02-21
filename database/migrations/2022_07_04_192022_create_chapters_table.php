@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('chapters', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('ord');
             $table->timestamps();
         });
     }

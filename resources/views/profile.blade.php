@@ -5,17 +5,17 @@
 @section('main_content')
 <div class="container">
     <div class="main-body">
-    
+
           <!-- Breadcrumb -->
           <h1 class="h3 mb-3">Профиль</h1>
           <!-- /Breadcrumb -->
-    
+
           <div class="row gutters-sm">
             <div class="col-md-4 mb-3">
               <div class="card">
                 <div class="card-body">
                   <div class="d-flex flex-column align-items-center text-center">
-                    <img src={{$user->avatar ? asset('/storage/'.$user->avatar) : asset('/storage/static/noavatar.png')}} alt="Admin" class="rounded-circle" width="150" height="150">
+                    <img src={{$user->avatar ? asset('/storage/'.$user->avatar) : asset('/storage/static/noavatar.png')}} alt="Admin" class="rounded-circle bg-light border border-secondary" width="150" height="150">
                     <div class="mt-3">
                       <h4>{{$user->name}}</h4>
                       {{-- <p class="text-secondary mb-1">Full Stack Developer</p> --}}

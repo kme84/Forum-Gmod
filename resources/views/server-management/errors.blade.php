@@ -87,7 +87,7 @@
       </div>
     </div>
 @push('scripts')
-<script>
+<script type="text/javascript">
   function createtask(error, server, realm)
   {
     var error_el = document.querySelector('#error-'+error);

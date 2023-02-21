@@ -28,10 +28,13 @@ Route::controller(ForumController::class)->group(function()
 {
     Route::get('/forum', 'forum');
     Route::post('/forum/addchapter', 'forum_addchapter');
+    Route::post('/forum/editchapter', 'forum_editchapter');
     Route::post('/forum/deletechapter', 'forum_deletechapter');
     Route::post('/forum/addtopic', 'forum_addtopic');
+    Route::post('/forum/edittopic', 'forum_edittopic');
     Route::post('/forum/deletetopic', 'forum_deletetopic');
     Route::post('/forum/addpost', 'forum_addpost');
+    Route::post('/forum/editpost', 'forum_editpost');
     Route::post('/forum/deletepost', 'forum_deletepost');
     Route::post('/forum/post/addcomment', 'forum_addcomment');
     Route::post('/forum/post/deletecomment', 'forum_deletecomment');
@@ -54,6 +57,7 @@ Route::middleware('auth')->group(function () {
     {
         Route::get('/server-management', 'servermanagement');
         Route::post('/server-management/add', 'servermanagement_add');
+        Route::post('/server-management/edit', 'servermanagement_edit');
         Route::post('/server-management/delete', 'servermanagement_delete');
         Route::get('/server-management/console/{id}', 'servermanagement_console');
         Route::get('/server-management/console-update', 'servermanagement_console_update');
@@ -77,6 +81,7 @@ Route::controller(ControlPanelController::class)->group(function()
     Route::get('/control-panel/statistics', 'statistics');
     Route::get('/control-panel/servers', 'servers');
     Route::post('/control-panel/servers/add', 'servers_add');
+    Route::post('/control-panel/servers/edit', 'servers_edit');
     Route::post('/control-panel/servers/delete', 'servers_delete');
 });
 

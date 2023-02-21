@@ -16,7 +16,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <div class="d-flex w-100 align-items-center">
-                    <img src={{$author->avatar ? asset('/storage/'.$author->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="96" height="96">
+                    <img src={{$author->avatar ? asset('/storage/'.$author->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle bg-light border border-secondary" width="96" height="96">
                     <div class="ms-3">
                         <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$author->name}}</a>
                     </div>
@@ -38,7 +38,7 @@
         @foreach ($comments as $key => $comment)
             <div class="card d-flex flex-row mb-4">
                 <div class="card-header d-flex flex-column align-items-center justify-content-center w-25">
-                    <img src={{$users[$key]->avatar ? asset('/storage/'.$users[$key]->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="96" height="96">
+                    <img src={{$users[$key]->avatar ? asset('/storage/'.$users[$key]->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle bg-light border border-secondary" width="96" height="96">
                     <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$users[$key]->name}}</a>
                 </div>
                 <div class="card-body d-flex flex-column justify-content-between w-75">
@@ -60,11 +60,11 @@
                 </div>
             </div>
         @endforeach
-        
+
 
         <div class="card d-flex flex-row mb-4">
             <div class="card-header d-flex flex-column align-items-center justify-content-center w-25">
-                <img src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle" width="96" height="96">
+                <img src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle bg-light border border-secondary" width="96" height="96">
                 <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{Auth::user()->name}}</a>
             </div>
             <div class="card-body w-75">
@@ -73,22 +73,22 @@
                     <input type="hidden" name="id" id="id" value="{{$id}}">
                     <textarea name="editor" id="editor"></textarea>
                     <div class="d-flex flex-row-reverse"><input class="btn btn-primary mt-2" name="submit" type="submit" value="Отправить"></div>
-                    
+
                 </form>
             </div>
         </div>
-        
+
     </div>
 </div>
 @push('scripts')
 <script src="{{asset('ckeditor5-build-classic/ckeditor.js')}}"></script>
-<script>
+<script type="text/javascript">
     var myeditor;
     class MyUploadAdapter {
         constructor( loader ) {
             this.loader = loader;
         }
-        upload() {         
+        upload() {
             return this.loader.file
                 .then( file => new Promise( ( resolve, reject ) => {
                     this._initRequest();

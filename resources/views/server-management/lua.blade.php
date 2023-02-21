@@ -4,7 +4,7 @@
 @endsection
 @section('secondary_content')
 <textarea style="overflow:auto;resize:none" class="w-100" rows="25" readonly="" wrap="off" id="console"></textarea>
-<form class="row g-3" name="formlua" onsubmit="sendLUA({{$server->id}}, document.formlua.command.value); return false;">
+<form class="g-3" name="formlua" onsubmit="sendLUA({{$server->id}}, document.formlua.command.value); return false;">
     @csrf
     <input type="hidden" name="id" value="{{$server->id}}">
     <input type="hidden" name="type" value='lua'>
@@ -14,7 +14,7 @@
     </div>
 </form>
 @push('scripts')
-<script>
+<script type="text/javascript">
   let tell = 0;
   let id = '{{$server->id}}'
   function updateConsole() {

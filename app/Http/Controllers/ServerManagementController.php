@@ -42,6 +42,24 @@ class ServerManagementController extends Controller
 
         return redirect('server-management');
     }
+    public function servermanagement_edit(Request $request)
+    {
+        $server = ServerControl::findOrFail($request->input('id'));
+
+        $this->authorize('delete', $server);
+
+        $valid = $request->validate([
+            'ipport' => 'required|min:4|max:100',
+            'gamemode' => 'required|min:4|max:100',
+        ]);
+
+        $server->ipport = $request->input('ipport');
+        $server->gamemode = $request->input('gamemode');
+
+        $server->save();
+
+        return redirect('server-management');
+    }
     public function servermanagement_delete(Request $request)
     {
         $server = ServerControl::findOrFail($request->id);
@@ -184,9 +202,9 @@ class ServerManagementController extends Controller
 
         $this->authorize('view_console', $server);
 
-        if (Storage::disk('local')->exists($id.'/players.txt'))
+        if (Storage::disk('local')->exists('servercontrol/'.$id.'/players.txt'))
         {
-            $players = Storage::disk('local')->get($id.'/players.txt');
+            $players = Storage::disk('local')->get('servercontrol/'.$id.'/players.txt');
             $players = json_decode($players, true);
             $steamids = '';
             foreach($players as $steamid=>$player)

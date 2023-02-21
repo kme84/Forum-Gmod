@@ -16,7 +16,7 @@
     </div>
 </form>
 @push('scripts')
-<script>
+<script type="text/javascript">
     let tell = 0;
     let id = '{{$server->id}}'
     function updateConsole() {

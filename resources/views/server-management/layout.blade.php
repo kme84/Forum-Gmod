@@ -4,6 +4,7 @@
 @endsection
 @section('main_content')
 <div class="container">
+    <h1>{{$server->gamemode}}</h1>
     <ul class="nav nav-tabs mb-2">
         <li class="nav-item">
           <a class="nav-link {{Request::is('server-management/console/'.$server->id) ? "active" : "" }}" href="/server-management/console/{{$server->id}}">Консоль</a>

@@ -33,7 +33,7 @@
               <li><a href="/server-management" class="nav-link px-2 {{Request::is('server-management') ? "text-secondary" : "text-white"}}">Управление серверами</a></li>
               @endcan
             </ul>
-    
+
             {{-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
               <input type="search" class="form-control form-control-dark text-white bg-dark" placeholder="Поиск..." aria-label="Search">
             </form> --}}
@@ -49,7 +49,7 @@
             @else
               <div class="dropdown text-end">
                   <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle text-white" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                      <img src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : asset('/storage/static/noavatar.png')}} alt="mdo" width="32" height="32" class="rounded-circle">
+                      <img src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : asset('/storage/static/noavatar.png')}} alt="mdo" width="32" height="32" class="rounded-circle bg-light">
                       {{ Auth::user()->name }}
                   </a>
                   <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
@@ -85,7 +85,7 @@
           </a>
           <span class="mb-3 mb-md-0 text-muted">© 2023 GmodForum</span>
         </div>
-    
+
         {{-- <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
           <li class="ms-3">
             <a class="text-muted" href="#">

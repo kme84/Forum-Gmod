@@ -7,7 +7,7 @@
     @foreach ($results as $user)
     <div class="list-group w-auto">
         <a href="/profile/{{$user->id}}" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-          <img src={{$user->avatar ? asset('/storage/'.$user->avatar) : asset('/storage/static/noavatar.png')}} alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+          <img src={{$user->avatar ? asset('/storage/'.$user->avatar) : asset('/storage/static/noavatar.png')}} alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0 bg-light border border-secondary">
           <div class="d-flex gap-2 w-100 justify-content-between">
             <div>
               @if(!$user->firstname && !$user->lastname)

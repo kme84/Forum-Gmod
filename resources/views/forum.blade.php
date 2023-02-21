@@ -35,6 +35,7 @@
         </a>
         <div class="dropdown-menu">
             @can('add', [new App\Models\Topic(), $chapter->id])
+            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#EditChapterModal" onclick="editchapter.id.value={{$chapter->id}};editchapter.ord.value={{$chapter->ord}};editchapter.name.value='{{$chapter->name}}'">Изменить раздел</button>
             <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#AddTopicModal" onclick="addtopic.id.value={{$chapter->id}}">Добавить тему</button>
             @endcan
             @can('delete', $chapter)
@@ -63,6 +64,7 @@
                 </svg>
             </a>
             <div class="dropdown-menu">
+              <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#EditTopicModal" onclick="edittopic.id.value={{$topic->id}};edittopic.name.value='{{$topic->name}}';edittopic.ord.value={{$topic->ord}}">Изменить тему</button>
               <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#RemoveTopicModal" onclick="removetopic.id.value={{$topic->id}}">Удалить тему</button>
             </div>
           </div>
@@ -79,94 +81,71 @@
   </div> 
   @endforeach 
 </div>
-<!-- Modal AddChapter -->
-<div class="modal fade" id="AddChapterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-      <div class="modal-content">
-      <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Добавление раздела</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <form class="d-grid gap-3" id="addchapter" method="post" action="forum/addchapter" onsubmit="return this.addchapter.disabled=true;">
-              @csrf
-              <input type="text" name="name" id="name" placeholder="Название раздела" class="form-control">
-          </form>
-      </div>
-      <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-          <input class="btn btn-success" name="addchapter" type="submit" form="addchapter" value="Добавить">
-      </div>
-      </div>
-  </div>
-</div>
-<!-- Modal RemoveChapter -->
-<div class="modal fade" id="RemoveChapterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-      <div class="modal-content">
-      <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Вы действительно хотите удалить раздел?</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <form class="d-grid gap-3" id="removechapter" method="post" action="forum/deletechapter" onsubmit="return this.removechapter.disabled=true;">
-              @csrf
-              <input type="hidden" name="id" id="id">
-              <p>Вы действительно хотите удалить раздел?</p>
-          </form>
-      </div>
-      <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-          <input class="btn btn-danger" name="removechapter" type="submit" form="removechapter" value="Удалить">
-      </div>
-      </div>
-  </div>
-</div>
-<!-- Modal AddTopic -->
-<div class="modal fade" id="AddTopicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-      <div class="modal-content">
-      <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Добавление темы</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <form class="d-grid gap-3" id="addtopic" method="post" action="forum/addtopic" onsubmit="return this.addtopic.disabled=true;">
-              @csrf
-              <input type="hidden" name="id" id="id">
-              <input type="text" name="name" id="name" placeholder="Название темы" class="form-control">
-          </form>
-      </div>
-      <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-          <input class="btn btn-success" name="addtopic" type="submit" form="addtopic" value="Добавить">
-      </div>
-      </div>
-  </div>
-</div>
-<!-- Modal RemoveTopic -->
-<div class="modal fade" id="RemoveTopicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-      <div class="modal-content">
-      <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Вы действительно хотите удалить тему?</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <form class="d-grid gap-3" id="removetopic" method="post" action="forum/deletetopic" onsubmit="return this.removetopic.disabled=true;">
-              @csrf
-              <input type="hidden" name="id" id="id">
-              <p>Вы действительно хотите удалить тему?</p>
-          </form>
-      </div>
-      <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-          <input class="btn btn-danger" name="removetopic" type="submit" form="removetopic" value="Удалить">
-      </div>
-      </div>
-  </div>
-</div>
-<script>
 
-</script>
+<x-modal modal-id='AddChapterModal' form-id='addchapter' action='forum/addchapter' method='post'>
+    <x-slot:title>
+        Добавление раздела
+    </x-slot>
+    <input type="text" name="name" id="name" placeholder="Название раздела" class="form-control">
+    <x-slot:button class='btn-success'>
+        Добавить
+    </x-slot>
+</x-modal>
+
+<x-modal modal-id='EditChapterModal' form-id='editchapter' action='forum/editchapter' method='post'>
+    <x-slot:title>
+        Изменение раздела
+    </x-slot>
+    <input type="hidden" name="id" id="id">
+    <input type="text" name="name" id="name" placeholder="Название раздела" class="form-control">
+    <input type="number" name="ord" id="ord" placeholder="Порядок отображения" class="form-control">
+    <x-slot:button class='btn-warning'>
+        Изменить
+    </x-slot>
+</x-modal>
+
+<x-modal modal-id='RemoveChapterModal' form-id='removechapter' action='forum/deletechapter' method='post'>
+    <x-slot:title>
+        Удаление раздела
+    </x-slot>
+    <input type="hidden" name="id" id="id">
+    <p>Вы действительно хотите удалить раздел?</p>
+    <x-slot:button class='btn-danger'>
+        Удалить
+    </x-slot>
+</x-modal>
+
+<x-modal modal-id='AddTopicModal' form-id='addtopic' action='forum/addtopic' method='post'>
+    <x-slot:title>
+        Добавление темы
+    </x-slot>
+    <input type="hidden" name="id" id="id">
+    <input type="text" name="name" id="name" placeholder="Название темы" class="form-control">
+    <x-slot:button class='btn-success'>
+        Добавить
+    </x-slot>
+</x-modal>
+
+<x-modal modal-id='EditTopicModal' form-id='edittopic' action='forum/edittopic' method='post'>
+    <x-slot:title>
+        Изменение темы
+    </x-slot>
+    <input type="hidden" name="id" id="id">
+    <input type="text" name="name" id="name" placeholder="Название темы" class="form-control">
+    <input type="number" name="ord" id="ord" placeholder="Порядок отображения" class="form-control">
+    <x-slot:button class='btn-warning'>
+        Изменить
+    </x-slot>
+</x-modal>
+
+<x-modal modal-id='RemoveTopicModal' form-id='removetopic' action='forum/deletetopic' method='post'>
+    <x-slot:title>
+        Удаление темы
+    </x-slot>
+    <input type="hidden" name="id" id="id">
+    <p>Вы действительно хотите удалить тему?</p>
+    <x-slot:button class='btn-danger'>
+        Удалить
+    </x-slot>
+</x-modal>
 @endsection

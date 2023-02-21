@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer("chapter");
             $table->string("name");
+            $table->integer('ord');
             $table->timestamps();
         });
     }

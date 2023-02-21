@@ -79,37 +79,27 @@
         </div>
       </div>
     </div>
-    <!-- Modal addtask -->
-    <div class="modal fade" id="AddTaskModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Добавление задачи</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form class="d-grid gap-3" id="addtask" name="addtask" method="post" action="/server-management/task-add" enctype="multipart/form-data" onsubmit="return this.addtask.disabled=true;">
-                    @csrf
-                    <input type="hidden" name="server" id="server" value="{{$server->id}}">
-                    <input type="text" name="title" id="title" placeholder="Наименование" class="form-control">
-                    <input type="text" name="description" id="description" placeholder="Описание" class="form-control">
-                    <select class="form-select" id="priority" name="priority" aria-label="Default select example">
-                        <option selected>Приоритет</option>
-                        <option value="1">Низкий</option>
-                        <option value="2">Средний</option>
-                        <option value="3">Высокий</option>
-                    </select>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <input class="btn btn-success" name="submit" type="submit" form="addtask" value="Добавить">
-            </div>
-            </div>
-        </div>
-    </div>
+
+    <x-modal modal-id='AddTaskModal' form-id='addtask' action='/server-management/task-add' method='post' enctype="multipart/form-data">
+    <x-slot:title>
+        Добавление задачи
+    </x-slot>
+    <input type="hidden" name="server" id="server" value="{{$server->id}}">
+    <input type="text" name="title" id="title" placeholder="Наименование" class="form-control">
+    <input type="text" name="description" id="description" placeholder="Описание" class="form-control">
+    <select class="form-select" id="priority" name="priority" aria-label="Default select example">
+        <option selected>Приоритет</option>
+        <option value="1">Низкий</option>
+        <option value="2">Средний</option>
+        <option value="3">Высокий</option>
+    </select>
+    <x-slot:button class='btn-success'>
+        Добавить
+    </x-slot>
+  </x-modal>
+  
 @push('scripts')
-<script>
+<script type="text/javascript">
   function taskdelete(task)
   {
     var formData = new FormData();

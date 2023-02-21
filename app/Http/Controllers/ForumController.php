@@ -38,7 +38,7 @@ class ForumController extends Controller
         ]);
 
         $chapter->name = $request->input('name');
-
+        $chapter->ord = 0;
         $chapter->save();
 
         return redirect('forum');
@@ -65,6 +65,25 @@ class ForumController extends Controller
         return redirect('forum');
     }
 
+    public function forum_editchapter(Request $request)
+    {
+
+        $valid = $request->validate([
+            'id' => 'required',
+            'name' => 'required|min:3|max:25',
+            'ord' => 'required|digits_between:-999,999',
+        ]);
+
+        $chapter = Chapter::findOrFail($request->input('id'));
+        $this->authorize('add', $chapter);
+
+        $chapter->name = $request->input('name');
+        $chapter->ord = $request->input('ord');
+        $chapter->save();
+
+        return redirect('forum');
+    }
+
     public function forum_addtopic(Request $request)
     {
         
@@ -78,7 +97,27 @@ class ForumController extends Controller
 
         $topic->chapter = $request->input('id');
         $topic->name = $request->input('name');
+        $topic->ord = 0;
 
+        $topic->save();
+
+        return redirect('forum');
+    }
+
+    public function forum_edittopic(Request $request)
+    {
+        
+        $valid = $request->validate([
+            'id' => 'required',
+            'name' => 'required|min:3|max:25',
+            'ord' => 'required|digits_between:-999,999',
+        ]);
+
+        $topic = Topic::findOrFail($request->input('id'));
+        $this->authorize('delete', [$topic, $topic->chapter]);
+
+        $topic->name = $request->input('name');
+        $topic->ord = $request->input('ord');
         $topic->save();
 
         return redirect('forum');
@@ -141,6 +180,7 @@ class ForumController extends Controller
         $post->title = $request->input('name');
         $post->content = '';
         $post->author = Auth::id();
+        $post->ord = 0;
         $post->save();
         
         $content = $request->input('editor');
@@ -155,6 +195,24 @@ class ForumController extends Controller
         $content = preg_replace($replace_patternt, '<img class="img-fluid" src="/storage/' . $path_save, $content);
 
         $post->content = $content;
+        $post->save();
+
+        return redirect('forum/'.$post->topic);
+    }
+
+    public function forum_editpost(Request $request)
+    {
+        $valid = $request->validate([
+            'id' => 'required',
+            'name' => 'required|min:3|max:25',
+            'ord' => 'required|digits_between:-999,999',
+        ]);
+
+        $post = Post::findOrFail($request->input('id'));
+        $this->authorize('delete', $post);
+
+        $post->title = $request->input('name');
+        $post->ord = $request->input('ord');
         $post->save();
 
         return redirect('forum/'.$post->topic);

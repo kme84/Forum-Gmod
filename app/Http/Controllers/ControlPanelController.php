@@ -77,6 +77,35 @@ class ControlPanelController extends Controller
         return redirect('control-panel/servers');
     }
 
+    public function servers_edit(Request $request)
+    {
+
+        $valid = $request->validate([
+            'id' => 'required',
+            'ipport' => 'required|min:11|max:25',
+            'gamemode' => 'required|min:3|max:25',
+            'banner' => 'required|file|mimes:jpg,bmp,png,gif',
+            'description' => 'required|min:10|max:500'
+        ]);
+
+        $server = Server::findOrFail($request->input('id'));
+
+        $this->authorize('delete', $server);
+
+        $file = $request->file('banner');
+        $path = $file->store('uploads', 'public');
+        $img = Image::make(Storage::path('/public/').$path)->fit(512, 512)->save(Storage::path('/public/').$path);
+
+        $server->ipport = $request->input('ipport');
+        $server->gamemode = $request->input('gamemode');
+        $server->banner = $path;
+        $server->description = $request->input('description');
+
+        $server->save();
+
+        return redirect('control-panel/servers');
+    }
+
     public function servers_delete(Request $request)
     {
 
