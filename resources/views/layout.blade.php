@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="icon" href={{ asset('/storage/static/gmod_icon.svg') }}>
+    <link rel="icon" href={{ asset('img/gmod_icon.svg') }}>
 
     <title>@yield('title')</title>
     <!-- Scripts -->
@@ -22,7 +22,7 @@
         <div class="container">
           <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
             <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-              <img src={{asset('/storage/static/gmod_icon.svg')}} width="32" height="32" alt="GmodForum" />
+              <img src={{asset('img/gmod_icon.svg')}} width="32" height="32" alt="GmodForum" />
             </a>
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
@@ -49,7 +49,7 @@
             @else
               <div class="dropdown text-end">
                   <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle text-white" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                      <img src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : asset('/storage/static/noavatar.png')}} alt="mdo" width="32" height="32" class="rounded-circle bg-light">
+                      <img src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : asset('img/noavatar.png')}} alt="mdo" width="32" height="32" class="rounded-circle bg-light">
                       {{ Auth::user()->name }}
                   </a>
                   <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
@@ -81,7 +81,7 @@
                 <path d="M.329 10.333A8.01 8.01 0 0 0 7.99 16C12.414 16 16 12.418 16 8s-3.586-8-8.009-8A8.006 8.006 0 0 0 0 7.468l.003.006 4.304 1.769A2.198 2.198 0 0 1 5.62 8.88l1.96-2.844-.001-.04a3.046 3.046 0 0 1 3.042-3.043 3.046 3.046 0 0 1 3.042 3.043 3.047 3.047 0 0 1-3.111 3.044l-2.804 2a2.223 2.223 0 0 1-3.075 2.11 2.217 2.217 0 0 1-1.312-1.568L.33 10.333Z"/>
                 <path d="M4.868 12.683a1.715 1.715 0 0 0 1.318-3.165 1.705 1.705 0 0 0-1.263-.02l1.023.424a1.261 1.261 0 1 1-.97 2.33l-.99-.41a1.7 1.7 0 0 0 .882.84Zm3.726-6.687a2.03 2.03 0 0 0 2.027 2.029 2.03 2.03 0 0 0 2.027-2.029 2.03 2.03 0 0 0-2.027-2.027 2.03 2.03 0 0 0-2.027 2.027Zm2.03-1.527a1.524 1.524 0 1 1-.002 3.048 1.524 1.524 0 0 1 .002-3.048Z"/>
             </svg> --}}
-            <img src={{asset('/storage/static/gmod_icon.svg')}} width="32" height="32" alt="GmodForum" />
+            <img src={{asset('img/gmod_icon.svg')}} width="32" height="32" alt="GmodForum" />
           </a>
           <span class="mb-3 mb-md-0 text-muted">© 2023 GmodForum</span>
         </div>
