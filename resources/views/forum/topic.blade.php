@@ -10,7 +10,7 @@
             <li class="breadcrumb-item active" aria-current="page">{{$topic->name}}</li>
         </ol>
     </nav>
-    @can('add', [new App\Models\Post(), $topic->id])
+    @can('forum.'.$topic->chapter.'.'.$topic->id.'.create')
     <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddPostModal">Добавить обсуждение</button>
     @endcan
     @if ($errors->any())
@@ -30,7 +30,7 @@
       <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
         <div class="d-flex justify-content-between">
           <a class="text-decoration-none text-muted" href="post/{{$post->id}}"><strong class="text-gray-dark">{{$post->title}}</strong></a>
-          @can('delete', $post)
+          @canany(['forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.delete', 'forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.edit'])
           <div class="dropdown show">
             <a href="#" data-bs-toggle="dropdown" data-display="static">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
@@ -40,8 +40,12 @@
                 </svg>
             </a>
             <div class="dropdown-menu dropdown-menu-right">
+                @can('forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.edit')
                 <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#EditPostModal" onclick="editpost.id.value={{$post->id}};editpost.name.value='{{$post->title}}';editpost.ord.value={{$post->ord}}">Изменить пост</button>
-              <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#RemovePostModal" onclick="removepost.id.value={{$post->id}}">Удалить пост</button>
+                @endcan
+                @can('forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.delete')
+                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#RemovePostModal" onclick="removepost.id.value={{$post->id}}">Удалить пост</button>
+                @endcan
             </div>
           </div>
           @endcan
@@ -95,7 +99,7 @@
         constructor( loader ) {
             this.loader = loader;
         }
-        upload() {         
+        upload() {
             return this.loader.file
                 .then( file => new Promise( ( resolve, reject ) => {
                     this._initRequest();

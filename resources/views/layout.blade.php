@@ -29,7 +29,7 @@
               <li><a href="/" class="nav-link px-2 {{Request::is('/') ? "text-secondary" : "text-white"}}">Главная</a></li>
               <li><a href="/forum" class="nav-link px-2 {{Request::is('forum') ? "text-secondary" : "text-white"}}">Форум</a></li>
               <li><a href="/users" class="nav-link px-2 {{Request::is('users') ? "text-secondary" : "text-white"}}">Пользователи</a></li>
-              @can('view', new App\Models\ServerControl())
+              @can('serverscontrol.create')
               <li><a href="/server-management" class="nav-link px-2 {{Request::is('server-management') ? "text-secondary" : "text-white"}}">Управление серверами</a></li>
               @endcan
             </ul>
@@ -53,7 +53,7 @@
                       {{ Auth::user()->name }}
                   </a>
                   <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
-                      @can('view', new App\Models\Server())
+                      @can('controlpanel.view')
                       <li><a class="dropdown-item" href="/control-panel/servers">Панель управления</a></li>
                       @endcan
                       <li><a class="dropdown-item" href="/profile/{{Auth::id()}}/edit">Настройки</a></li>

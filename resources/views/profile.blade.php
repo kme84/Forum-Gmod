@@ -91,7 +91,7 @@
                     </div>
                   </div>
                   <hr>
-                  @can('edit', $user)
+                  @can('users.'.$user->id.'.edit')
                   <div class="row">
                     <div class="col-sm-12">
                       <a class="btn btn-info" href="{{$user->id}}/edit">Редактировать</a>

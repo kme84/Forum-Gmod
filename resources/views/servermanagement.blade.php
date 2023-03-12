@@ -18,20 +18,26 @@
 
     <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddServer">Добавить сервер</button>
     @foreach ($servers as $server)
+    @can('serverscontrol.'.$server->id.'.view')
     <div class="row border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col p-4 d-flex flex-column position-static">
         <strong class="d-inline-block mb-2 text-primary">Online</strong>
         <h3 class="mb-0">{{$server->gamemode}}</h3>
         </div>
         <div class="col-auto m-auto text-muted">IP: {{$server->ipport}}</div>
+        @can('serverscontrol.'.$server->id.'.edit')
         <button class="col-auto m-auto me-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#EditServer" onclick="editserver.id.value={{$server->id}};editserver.ipport.value='{{$server->ipport}}';editserver.gamemode.value='{{$server->gamemode}}';">Изменить</button>
+        @endcan
         <a class="col-auto m-auto btn btn-primary" href="server-management/console/{{$server->id}}">Управление</a>
+        @can('serverscontrol.'.$server->id.'.delete')
         <form class="col-auto m-auto" method="post" action="server-management/delete">
             @csrf
             <input type="hidden" name="id" id="id" value="{{$server->id}}">
             <input class="btn btn-danger" type="submit" value="Удалить">
         </form>
+        @endcan
     </div>
+    @endcan
     @endforeach
 </div>
 

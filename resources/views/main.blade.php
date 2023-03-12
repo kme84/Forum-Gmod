@@ -10,7 +10,7 @@
         @php
             $gamemode_a = explode(' ', $server->gamemode);
         @endphp
-        <h2 class="featurette-heading">{{$gamemode_a[0]}} 
+        <h2 class="featurette-heading">{{$gamemode_a[0]}}
           @isset($gamemode_a[1])
             <span class="text-muted">{{$gamemode_a[1]}}</span>
           @endisset

@@ -13,20 +13,27 @@ use App\Models\User;
 
 class ProfileController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function profile($id)
     {
         $user = User::findOrFail($id);
+
+        if (!Auth::user()->can('users.'.$user->id.'.view'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('profile', ['user' => $user]);
     }
 
     public function profile_edit($id)
     {
         $user = User::findOrFail($id);
+
+        if (!Auth::user()->can('users.'.$user->id.'.edit'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('profile_edit', ['user' => $user]);
     }
 
@@ -39,12 +46,17 @@ class ProfileController extends Controller
             'uploadAvatar' => 'nullable|file|mimes:jpg,bmp,png,gif'
         ]);
 
-        $file = $request->file('uploadAvatar');
+        $user = User::findOrFail($request->input('id'));
 
-        $user = User::find($request->input('id'));
+        if (!Auth::user()->can('users.'.$user->id.'.edit'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
 
         $user->name = $request->input('inputUsername');
         $user->bio = $request->input('inputBio');
+
+        $file = $request->file('uploadAvatar');
 
         if($file)
         {
@@ -77,6 +89,11 @@ class ProfileController extends Controller
 
         $user = User::find($request->input('id'));
 
+        if (!Auth::user()->can('users.'.$user->id.'.edit'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
         $user->firstname = $request->input('inputFirstName');
         $user->lastname = $request->input('inputLastName');
         $user->sex = $request->input('inputState');
@@ -95,9 +112,14 @@ class ProfileController extends Controller
 
         $user = User::find($request->input('id'));
 
-        if(Auth::user()->role === "admin" && Auth::id() != $request->input('id'))
+        if (!Auth::user()->can('users.'.$user->id))
         {
-            $this->authorize('edit', $user);
+            abort(403, 'Unauthorized action.');
+        }
+
+        if(Auth::user()->hasRole('super-admin') && Auth::id() != $request->input('id'))
+        {
+            //$this->authorize('edit', $user);
             if ($request->input('inputPasswordNew') == $request->input('inputPasswordNew2')) {
                 $user->password = Hash::make($request->input('inputPasswordNew'));
                 $user->save();

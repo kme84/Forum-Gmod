@@ -12,22 +12,28 @@ use App\Models\ServerCommand;
 use App\Models\Task;
 use App\Models\User;
 
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+
 class ServerManagementController extends Controller
 {
-    public function __construct()
-    {
-        //$this->middleware('auth');
-    }
-    
     public function servermanagement()
     {
+        if (!Auth::user()->can('serverscontrol.view'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
         return view('servermanagement', ['servers' => ServerControl::all()]);
     }
     public function servermanagement_add(Request $request)
     {
         $server = new ServerControl();
 
-        $this->authorize('add', $server);
+        //$this->authorize('add', $server);
+        if (!Auth::user()->can('serverscontrol.create'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
 
         $valid = $request->validate([
             'ipport' => 'required|min:4|max:100',
@@ -40,13 +46,20 @@ class ServerManagementController extends Controller
 
         $server->save();
 
+        $permission = Permission::findOrCreate('serverscontrol.'.$server->id);
+        Auth::user()->givePermissionTo($permission);
+
         return redirect('server-management');
     }
     public function servermanagement_edit(Request $request)
     {
         $server = ServerControl::findOrFail($request->input('id'));
 
-        $this->authorize('delete', $server);
+        //$this->authorize('delete', $server);
+        if (!Auth::user()->can('serverscontrol.'.$server->id.'.edit'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
 
         $valid = $request->validate([
             'ipport' => 'required|min:4|max:100',
@@ -64,7 +77,13 @@ class ServerManagementController extends Controller
     {
         $server = ServerControl::findOrFail($request->id);
 
-        $this->authorize('delete', $server);
+        //$this->authorize('delete', $server);
+        if (!Auth::user()->can('serverscontrol.'.$server->id.'.delete'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        Permission::where('name', 'like', 'serverscontrol.'.$server->id.'%')->delete();
 
         $server->delete();
 
@@ -75,7 +94,12 @@ class ServerManagementController extends Controller
     {
         $server = ServerControl::findOrFail($id);
 
-        $this->authorize('view_console', $server);
+        if (!Auth::user()->can('serverscontrol.'.$server->id.'.view'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        //$this->authorize('view_console', $server);
 
         return view('server-management/console', ['server' => $server]);
     }
@@ -125,7 +149,7 @@ class ServerManagementController extends Controller
                 }
             }
         }
-        
+
         $commands = ServerCommand::where('server_id', '=', $server->id)->get();
 
         $commands_array = $commands ? $commands->toArray() : [];
@@ -164,7 +188,7 @@ class ServerManagementController extends Controller
         }
         $tell = ftell($fp);
         fclose($fp);
-        
+
         $rows = $rows ? $rows : '';
         $arr = mb_convert_encoding(['rows' => $rows, 'tell' => $tell], "UTF-8", "auto");
         return $arr;
@@ -181,13 +205,21 @@ class ServerManagementController extends Controller
         $server = ServerControl::findOrFail($request->input('id'));
         if ($request->input('type') == "command")
         {
-            $this->authorize('run_command', $server);
+            //$this->authorize('run_command', $server);
+            if (!Auth::user()->can('serverscontrol.'.$server->id.'.commands.create'))
+            {
+                abort(403, 'Unauthorized action.');
+            }
         }
         elseif ($request->input('type') == "lua")
         {
-            $this->authorize('run_lua', $server);
+            //$this->authorize('run_lua', $server);
+            if (!Auth::user()->can('serverscontrol.'.$server->id.'.luas.create'))
+            {
+                abort(403, 'Unauthorized action.');
+            }
         }
-    
+
         $command = new ServerCommand();
         $command->server_id = $server->id;
         $command->type = $request->input('type');
@@ -200,7 +232,11 @@ class ServerManagementController extends Controller
     {
         $server = ServerControl::findOrFail($id);
 
-        $this->authorize('view_console', $server);
+        //$this->authorize('view_console', $server);
+        if (!Auth::user()->can('serverscontrol.'.$server->id.'.view'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
 
         if (Storage::disk('local')->exists('servercontrol/'.$id.'/players.txt'))
         {
@@ -230,7 +266,11 @@ class ServerManagementController extends Controller
     {
         $server = ServerControl::findOrFail($id);
 
-        $this->authorize('run_lua', $server);
+        //$this->authorize('run_lua', $server);
+        if (!Auth::user()->can('serverscontrol.'.$server->id.'.luas.create'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
 
         return view('server-management/lua', ['server' => $server]);
     }
@@ -238,7 +278,11 @@ class ServerManagementController extends Controller
     {
         $server = ServerControl::findOrFail($id);
 
-        $this->authorize('view_errors', $server);
+        //$this->authorize('view_errors', $server);
+        if (!Auth::user()->can('serverscontrol.'.$server->id.'.errors.view'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
 
         $errors = ServerError::where('server_id', '=', $server->id)->get();
         return view('server-management/errors', ['server' => $server, 'errors' => $errors]);
@@ -246,8 +290,14 @@ class ServerManagementController extends Controller
     public function servermanagement_error_delete(Request $request)
     {
         $error = ServerError::findOrFail($request->input('id'));
+
+        if (!Auth::user()->can('serverscontrol.'.$error->server_id.'.errors.delete'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
         $error->delete();
-        
+
         return response('', 200)
         ->header('Content-Type', 'text/plain');
     }
@@ -261,6 +311,10 @@ class ServerManagementController extends Controller
         ]);
 
         $server = ServerControl::findOrFail($request->input('server'));
+        if (!Auth::user()->can('serverscontrol.'.$server->id.'.tasks.create'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
         $task = new Task();
         $task->server = $server->id;
         $task->title = $request->input('title');
@@ -269,14 +323,18 @@ class ServerManagementController extends Controller
         $task->author = Auth::id();
         $task->priority = $request->input('priority');
         $task->save();
-        
+
         return redirect('server-management/tasks/'.$server->id);
     }
     public function servermanagement_tasks($id)
     {
         $server = ServerControl::findOrFail($id);
 
-        $this->authorize('view_errors', $server);
+        //$this->authorize('view_errors', $server);
+        if (!Auth::user()->can('serverscontrol.'.$server->id.'.tasks.view'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
 
         $tasks = Task::where('server', '=', $server->id)->get();
         $priorities = array(1 => 'Низкий', 2 => 'Средний', 3 => 'Высокий');
@@ -285,17 +343,29 @@ class ServerManagementController extends Controller
     public function servermanagement_task_delete(Request $request)
     {
         $task = Task::findOrFail($request->input('id'));
+
+        if (!Auth::user()->can('serverscontrol.'.$task->server.'.tasks.delete'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
         $task->delete();
-        
+
         return response('', 200)
         ->header('Content-Type', 'text/plain');
     }
     public function servermanagement_task_change(Request $request)
     {
         $task = Task::findOrFail($request->input('id'));
+
+        if (!Auth::user()->can('serverscontrol.'.$task->server.'.tasks.edit'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
         $task->status = $task->status == 2 ? 1 : 2;
         $task->save();
-        
+
         return response('', 200)
         ->header('Content-Type', 'text/plain');
     }
