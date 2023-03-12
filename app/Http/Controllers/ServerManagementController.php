@@ -248,7 +248,7 @@ class ServerManagementController extends Controller
                 $steamids .= $steamid . ',';
             }
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=A86A2797CC650D04D91E9B5F17880143&format=json&steamids=".$steamids);
+            curl_setopt($ch, CURLOPT_URL, "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".env('STEAM_API_KEY', 'none')."&format=json&steamids=".$steamids);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($ch);
             curl_close($ch);
