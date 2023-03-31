@@ -10,52 +10,44 @@
             <li class="breadcrumb-item active" aria-current="page">{{$topic->name}}</li>
         </ol>
     </nav>
-    @can('forum.'.$topic->chapter.'.'.$topic->id.'.create')
-    <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddPostModal">Добавить обсуждение</button>
+    @can('forum.'.$topic->chapter_id.'.'.$topic->id.'.create')
+        <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddPostModal">Добавить обсуждение</button>
     @endcan
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-    @foreach ($posts as $post)
-    <div class="d-flex text-muted pt-3">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-right-fill me-2 flex-shrink-0" viewBox="0 0 16 16">
-        <path d="M14 0a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
-      </svg>
-      <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
-        <div class="d-flex justify-content-between">
-          <a class="text-decoration-none text-muted" href="post/{{$post->id}}"><strong class="text-gray-dark">{{$post->title}}</strong></a>
-          @canany(['forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.delete', 'forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.edit'])
-          <div class="dropdown show">
-            <a href="#" data-bs-toggle="dropdown" data-display="static">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
-                    <circle cx="12" cy="12" r="1"></circle>
-                    <circle cx="19" cy="12" r="1"></circle>
-                    <circle cx="5" cy="12" r="1"></circle>
-                </svg>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right">
-                @can('forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.edit')
-                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#EditPostModal" onclick="editpost.id.value={{$post->id}};editpost.name.value='{{$post->title}}';editpost.ord.value={{$post->ord}}">Изменить пост</button>
-                @endcan
-                @can('forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.delete')
-                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#RemovePostModal" onclick="removepost.id.value={{$post->id}}">Удалить пост</button>
-                @endcan
+    <div class="p-3 rounded shadow-sm">
+        @foreach ($topic->posts as $post)
+        <div class="d-flex text-muted my-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-right-fill me-2 flex-shrink-0" viewBox="0 0 16 16">
+            <path d="M14 0a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
+        </svg>
+        <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
+            <div class="d-flex justify-content-between">
+            <a class="text-decoration-none text-muted" href="post/{{$post->id}}"><strong class="text-gray-dark">{{$post->name}}</strong></a>
+            @canany(['forum.'.$post->chapter_id.'.'.$post->topic_id.'.'.$post->id.'.delete', 'forum.'.$post->chapter_id.'.'.$post->topic_id.'.'.$post->id.'.edit'])
+            <div class="dropdown show">
+                <a href="#" data-bs-toggle="dropdown" data-display="static">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                    </svg>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    @can('forum.'.$post->chapter_id.'.'.$post->topic_id.'.'.$post->id.'.edit')
+                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#EditPostModal" onclick="editpost.id.value={{$post->id}};editpost.name.value='{{$post->name}}';editpost.ord.value={{$post->ord}}">Изменить пост</button>
+                    @endcan
+                    @can('forum.'.$post->chapter_id.'.'.$post->topic_id.'.'.$post->id.'.delete')
+                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#RemovePostModal" onclick="removepost.id.value={{$post->id}}">Удалить пост</button>
+                    @endcan
+                </div>
             </div>
-          </div>
-          @endcan
-          {{-- <a href="#">Follow</a> --}}
+            @endcan
+            {{-- <a href="#">Follow</a> --}}
+            </div>
+            <span class="d-block">Количество комментариев: {{$post->size}}</span>
         </div>
-        <span class="d-block">Количество сообщений</span>
-      </div>
+        </div>
+        @endforeach
     </div>
-
-    @endforeach
 </div>
 <x-modal modal-id='AddPostModal' form-id='addpost' action='addpost' method='post' enctype="multipart/form-data">
     <x-slot:title class='modal-lg'>

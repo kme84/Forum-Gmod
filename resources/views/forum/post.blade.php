@@ -1,90 +1,84 @@
 @extends('layout')
 @section('title')
-    Форум | {{$post->title}}
+    Форум | {{$post->name}}
 @endsection
 @section('main_content')
 <div class="container">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/forum">Форум</a></li>
-            <li class="breadcrumb-item"><a href="/forum/{{$post->topic}}">{{$post->topic_name}}</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{$post->title}}</li>
+            <li class="breadcrumb-item"><a href="/forum/{{$post->topic_id}}">{{$post->topic_name}}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{$post->name}}</li>
         </ol>
     </nav>
-
-    <div class="col-md-12">
-        <div class="card mb-4">
-            <div class="card-header">
-                <div class="d-flex w-100 align-items-center">
-                    <img src={{$post->author_avatar ? asset('/storage/'.$post->author_avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle bg-light border border-secondary" width="96" height="96">
-                    <div class="ms-3">
-                        <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$post->author_name}}</a>
-                    </div>
-                    {{-- <div class="text-muted small me-3 position-absolute end-0">
-                        <div>Member since <strong>01/1/2019</strong></div>
-                        <div><strong>134</strong> posts</div>
-                    </div> --}}
+    <div class="row card mb-4">
+        <div class="card-header">
+            <div class="d-flex col-12 align-items-center">
+                <img src={{$post->author_avatar ? asset('/storage/'.$post->author_avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle bg-light border border-secondary" width="96" height="96">
+                <div class="ms-3">
+                    <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$post->author_name}}</a>
                 </div>
-            </div>
-            <div class="card-body ck-content" id='content-' name='content-' author="{{$post->author_name}}">
-                {!!$post->content!!}
-            </div>
-            <div class="card-footer d-flex flex-wrap justify-content-between align-items-center">
-                <div class="text-muted small">📅 {{$post->created_at}}</div>
-                @can('forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.create')
-                <button type="button" class="btn btn-primary" onclick="comment(this.value);" value="">Ответить</button>
-                @endcan
+                {{-- <div class="text-muted small me-3 position-absolute end-0">
+                    <div>Member since <strong>01/1/2019</strong></div>
+                    <div><strong>134</strong> posts</div>
+                </div> --}}
             </div>
         </div>
-
-        @foreach ($comments as $key => $comment)
-            @can('forum.'.$comment->chapter.'.'.$comment->topic.'.'.$comment->post.'.'.$comment->id.'.view')
-            <div class="card d-flex flex-row mb-4">
-                <div class="card-header d-flex flex-column align-items-center justify-content-center w-25">
-                    <img src={{$comment->author_avatar ? asset('/storage/'.$comment->author_avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle bg-light border border-secondary" width="96" height="96">
-                    <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$comment->author_name}}</a>
-                </div>
-                <div class="card-body d-flex flex-column justify-content-between w-75">
-                    <div id='content-{{$key}}' name='content-{{$key}}' author="{{$comment->author_name}}" class="ck-content">
-                        {!!$comment->content!!}
-                    </div>
-                    <hr>
-                    <div class="d-flex align-items-center justify-content-between flex-wrap">
-                        <div class="text-muted small me-auto">📅 {{$comment->created_at}}</div>
-                        @can('forum.'.$comment->chapter.'.'.$comment->topic.'.'.$comment->post.'.'.$comment->id.'.delete')
-                        <form action='deletecomment' method='POST' name='deletecomment' id='deletecomment' enctype="multipart/form-data" onsubmit="return this.deletecomment.disabled=true;">
-                            @csrf
-                            <input type="hidden" name="id" id="id" value="{{$comment->id}}">
-                            <input class="btn btn-danger ms-2" name="submit" type="submit" value="Удалить">
-                        </form>
-                        @endcan
-                        @can('forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.create')
-                        <button class="btn btn-primary ms-2" name="reply" id="reply" type="button" onclick="comment(this.value);" value="{{$key}}">Ответить</button>
-                        @endcan
-                    </div>
-                </div>
-            </div>
+        <div class="card-body ck-content" id='content-' name='content-' author="{{$post->author_name}}">
+            {!!$post->content!!}
+        </div>
+        <div class="card-footer d-flex flex-wrap justify-content-between align-items-center">
+            <div class="text-muted small">📅 {{$post->created_at}}</div>
+            @can('forum.'.$post->chapter_id.'.'.$post->topic_id.'.'.$post->id.'.create')
+            <button type="button" class="btn btn-primary" onclick="comment(this.value);" value="">Ответить</button>
             @endcan
-        @endforeach
-
-        @can('forum.'.$post->chapter.'.'.$post->topic.'.'.$post->id.'.create')
-        <div class="card d-flex flex-row mb-4">
-            <div class="card-header d-flex flex-column align-items-center justify-content-center w-25">
-                <img src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle bg-light border border-secondary" width="96" height="96">
-                <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{Auth::user()->name}}</a>
+        </div>
+    </div>
+    @foreach ($post->comments as $key => $comment)
+        @can('forum.'.$comment->chapter_id.'.'.$comment->topic_id.'.'.$comment->post_id.'.'.$comment->id.'.view')
+        <div class="row card d-flex flex-row mb-4">
+            <div class="bg-light d-flex flex-column align-items-center justify-content-center col-md-2">
+                <img src={{$comment->author_avatar ? asset('/storage/'.$comment->author_avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle bg-light border border-secondary mt-2 mt-md-0" width="96" height="96">
+                <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{$comment->author_name}}</a>
             </div>
-            <div class="card-body w-75">
-                <form action='addcomment' method='POST' name='addcomment' id='addcomment' enctype="multipart/form-data" onsubmit="return this.addcomment.disabled=true;">
-                    @csrf
-                    <input type="hidden" name="id" id="id" value="{{$id}}">
-                    <textarea name="editor" id="editor"></textarea>
-                    <div class="d-flex flex-row-reverse"><input class="btn btn-primary mt-2" name="submit" type="submit" value="Отправить"></div>
-                </form>
+            <div class="card-body d-flex flex-column justify-content-between col-md-10">
+                <div id='content-{{$key}}' name='content-{{$key}}' author="{{$comment->author_name}}" class="ck-content">
+                    {!!$comment->content!!}
+                </div>
+                <hr>
+                <div class="d-flex align-items-center justify-content-between flex-wrap">
+                    <div class="text-muted small me-auto">📅 {{$comment->created_at}}</div>
+                    @can('forum.'.$comment->chapter_id.'.'.$comment->topic_id.'.'.$comment->post_id.'.'.$comment->id.'.delete')
+                    <form action='deletecomment' method='POST' name='deletecomment' id='deletecomment' enctype="multipart/form-data" onsubmit="return this.deletecomment.disabled=true;">
+                        @csrf
+                        <input type="hidden" name="id" id="id" value="{{$comment->id}}">
+                        <input class="btn btn-danger ms-2" name="submit" type="submit" value="Удалить">
+                    </form>
+                    @endcan
+                    @can('forum.'.$post->chapter_id.'.'.$post->topic_id.'.'.$post->id.'.create')
+                    <button class="btn btn-primary ms-2" name="reply" id="reply" type="button" onclick="comment(this.value);" value="{{$key}}">Ответить</button>
+                    @endcan
+                </div>
             </div>
         </div>
         @endcan
-
+    @endforeach
+    @can('forum.'.$post->chapter_id.'.'.$post->topic_id.'.'.$post->id.'.create')
+    <div class="row card d-flex flex-row mb-4">
+        <div class="bg-light d-flex flex-column align-items-center justify-content-center col-md-2">
+            <img src={{Auth::user()->avatar ? asset('/storage/'.Auth::user()->avatar) : asset('/storage/static/noavatar.png')}} class="d-block ui-w-40 rounded-circle bg-light border border-secondary mt-2 mt-md-0" width="96" height="96">
+            <a class="text-decoration-none" href="javascript:void(0)" data-abc="true">{{Auth::user()->name}}</a>
+        </div>
+        <div class="card-body col-md-10">
+            <form action='addcomment' method='POST' name='addcomment' id='addcomment' enctype="multipart/form-data" onsubmit="return this.addcomment.disabled=true;">
+                @csrf
+                <input type="hidden" name="id" id="id" value="{{$id}}">
+                <textarea name="editor" id="editor"></textarea>
+                <div class="d-flex flex-row-reverse"><input class="btn btn-primary mt-2" name="submit" type="submit" value="Отправить"></div>
+            </form>
+        </div>
     </div>
+    @endcan
 </div>
 @push('scripts')
 <script src="{{asset('ckeditor5-build-classic/ckeditor.js')}}"></script>

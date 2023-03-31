@@ -4,15 +4,6 @@
 @endsection
 @section('secondary_content')
 <div class="col-md-9 col-lg-8 px-md-4" x-data='permissions'>
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
     <form action="/control-panel/permissions-role/edit" method="post">
         @csrf
         <div class="d-xl-flex mb-4">
@@ -49,7 +40,7 @@
                         <select class="form-select" name='permissionPost' id="permissionPost" aria-label="Select post" x-model='post_id'>
                             <option value=''>Не выбрано</option>
                             <template x-for="post in filteredPosts" :key="post.id">
-                                <option x-model='post.id' x-text='post.title'></option>
+                                <option x-model='post.id' x-text='post.name'></option>
                             </template>
                         </select>
                         <label for="floatingSelect">Выберите пост</label>
@@ -174,12 +165,12 @@
 
             get filteredTopics()
             {
-                return this.topics.filter( i => i.chapter == this.chapter_id)
+                return this.topics.filter( i => i.chapter_id == this.chapter_id)
             },
 
             get filteredPosts()
             {
-                return this.posts.filter( i => i.topic == this.topic_id)
+                return this.posts.filter( i => i.topic_id == this.topic_id)
             }
         }))
     });

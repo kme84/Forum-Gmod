@@ -14,10 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('topics', function (Blueprint $table) {
-            $table->id();
-            $table->integer("chapter");
+            //$table->id();
+            $table->bigIncrements('id');
+            $table->integer("chapter_id");
             $table->string("name");
             $table->integer('ord');
+            $table->integer('size');
             $table->timestamps();
         });
     }

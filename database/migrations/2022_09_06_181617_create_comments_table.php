@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->integer('chapter');
-            $table->integer('topic');
-            $table->integer('post');
-            $table->integer('author');
+            $table->integer('chapter_id');
+            $table->integer('topic_id');
+            $table->integer('post_id');
+            $table->integer('user_id');
             $table->text('content');
             $table->timestamps();
         });

@@ -12,6 +12,6 @@ class Chapter extends Model
 
     public function topics(): HasMany
     {
-        return $this->hasMany(Topic::class, 'chapter');
+        return $this->hasMany(Topic::class);
     }
 }

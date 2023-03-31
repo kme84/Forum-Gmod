@@ -41,12 +41,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(ForumController::class)->group(function()
     {
         Route::get('/forum', 'forum');
-        Route::post('/forum/addchapter', 'forum_addchapter');
-        Route::post('/forum/editchapter', 'forum_editchapter');
-        Route::post('/forum/deletechapter', 'forum_deletechapter');
-        Route::post('/forum/addtopic', 'forum_addtopic');
-        Route::post('/forum/edittopic', 'forum_edittopic');
-        Route::post('/forum/deletetopic', 'forum_deletetopic');
         Route::post('/forum/addpost', 'forum_addpost');
         Route::post('/forum/editpost', 'forum_editpost');
         Route::post('/forum/deletepost', 'forum_deletepost');
@@ -102,6 +96,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/control-panel/servers/delete', 'servers_delete');
         Route::get('/control-panel/permissions', 'permissions');
         Route::post('/control-panel/permissions-role/edit', 'permissions_role_edit');
+        Route::get('/control-panel/forum', 'forum');
+        Route::post('/control-panel/forum/addchapter', 'forum_addchapter');
+        Route::post('/control-panel/forum/editchapter', 'forum_editchapter');
+        Route::post('/control-panel/forum/deletechapter', 'forum_deletechapter');
+        Route::post('/control-panel/forum/addtopic', 'forum_addtopic');
+        Route::post('/control-panel/forum/edittopic', 'forum_edittopic');
+        Route::post('/control-panel/forum/deletetopic', 'forum_deletetopic');
     });
 });
 

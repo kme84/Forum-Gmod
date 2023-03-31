@@ -5,17 +5,6 @@
 @section('main_content')
 <div class="container">
     <h1>Управление серверами</h1>
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <button class="mb-4 w-100 btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#AddServer">Добавить сервер</button>
     @foreach ($servers as $server)
     @can('serverscontrol.'.$server->id.'.view')

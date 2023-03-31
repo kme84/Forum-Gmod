@@ -27,15 +27,6 @@
         </div>
 
         <div class="col-md-7 col-xl-8">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="account" role="tabpanel">
 
