@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -16,10 +15,10 @@ use App\Models\Chapter;
 use App\Models\Topic;
 use App\Models\Post;
 use App\Models\Comment;
+use App\Models\User;
 
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-
 
 class ControlPanelController extends Controller
 {
@@ -28,8 +27,6 @@ class ControlPanelController extends Controller
      *
      * @return void
      */
-
-    private string $path_files = 'uploads/forum/';
 
     public function statistics()
     {
@@ -41,9 +38,6 @@ class ControlPanelController extends Controller
     }
     public function servers()
     {
-        // $servers = new Server();
-        // $this->authorize('view', $servers);
-
         if (!Auth::user()->can('controlpanel.servers.view'))
         {
             abort(403, 'Unauthorized action.');
@@ -57,8 +51,6 @@ class ControlPanelController extends Controller
         {
             abort(403, 'Unauthorized action.');
         }
-
-        //$this->authorize('add', $server);
 
         $valid = $request->validate([
             'ipport' => 'required|min:11|max:25',
@@ -95,7 +87,6 @@ class ControlPanelController extends Controller
 
         $server = Server::findOrFail($request->input('id'));
 
-        //$this->authorize('delete', $server);
         if (!Auth::user()->can('controlpanel.servers.edit'))
         {
             abort(403, 'Unauthorized action.');
@@ -123,14 +114,12 @@ class ControlPanelController extends Controller
 
         $server = Server::findOrFail($request->id);
 
-        //$this->authorize('delete', $server);
         if (!Auth::user()->can('controlpanel.servers.delete'))
         {
             abort(403, 'Unauthorized action.');
         }
 
         Storage::disk('public')->delete($server->banner);
-        //unlink(public_path('storage/'.$server->banner));
         $server->delete();
 
         return redirect('control-panel/servers');
@@ -236,157 +225,23 @@ class ControlPanelController extends Controller
         return view('control-panel/forum', ['chapters' => $chapters]);
     }
 
-    public function forum_addchapter(Request $request)
+    public function roles()
     {
-        if(!Auth::user()->can('forum.create'))
-        {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $valid = $request->validate([
-            'name' => 'required|min:3|max:25',
-        ]);
-
-        $chapter = new Chapter();
-        $chapter->name = $request->input('name');
-        $chapter->ord = 0;
-        $chapter->save();
-
-        $role = Role::findOrCreate('user');
-        $premission = Permission::findOrCreate('forum.'.$chapter->id.'.view');
-        $role->givePermissionTo($premission);
-        $premission = Permission::findOrCreate('forum.'.$chapter->id.'.*');
-        Auth::user()->givePermissionTo($premission);
-
-        return redirect('/control-panel/forum');
+        return view('control-panel/roles', ['roles' => Role::all(), 'users' => User::all()]);
     }
 
-    public function forum_deletechapter(Request $request)
+    public function roles_user_edit(Request $request)
     {
-
-        $valid = $request->validate([
-            'id' => 'required',
-        ]);
-
-        $chapter = Chapter::findOrFail($request->input('id'));
-
-        if(!Auth::user()->can('forum.'.$chapter->id.'.delete'))
+        if (!Auth::user()->can('controlpanel.permissions.edit'))
         {
             abort(403, 'Unauthorized action.');
         }
 
-        Comment::where('chapter_id', $chapter->id)->delete();
-        Post::where('chapter_id', $chapter->id)->delete();
-        Topic::where('chapter_id', $chapter->id)->delete();
-
-        Storage::disk('public')->deleteDirectory($this->path_files . $chapter->id);
-
-        Permission::where('name', 'like', 'forum.'.$chapter->id.'%')->delete();
-
-        $chapter->delete();
-
-        return redirect('/control-panel/forum');
-    }
-
-    public function forum_editchapter(Request $request)
-    {
-
         $valid = $request->validate([
-            'id' => 'required',
-            'name' => 'required|min:3|max:25',
-            'ord' => 'required|digits_between:-999,999',
+            'user' => 'required',
         ]);
 
-        $chapter = Chapter::findOrFail($request->input('id'));
-
-       if(!Auth::user()->can('forum.'.$chapter->id.'.edit'))
-        {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $chapter->name = $request->input('name');
-        $chapter->ord = $request->input('ord');
-        $chapter->save();
-
-        return redirect('/control-panel/forum');
-    }
-
-    public function forum_addtopic(Request $request)
-    {
-
-        $valid = $request->validate([
-            'id' => 'required',
-            'name' => 'required|min:3|max:25',
-        ]);
-
-        $topic = new Topic();
-        $topic->chapter_id = $request->input('id');
-        $topic->name = $request->input('name');
-        $topic->ord = 0;
-        $topic->size = 0;
-
-        if(!Auth::user()->can('forum.'.$topic->chapter_id.'.create'))
-        {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $topic->save();
-
-        $role = Role::findOrCreate('user');
-        $premission = Permission::findOrCreate('forum.'.$topic->chapter_id.'.'.$topic->id.'.view');
-        $role->givePermissionTo($premission);
-        $premission = Permission::findOrCreate('forum.'.$topic->chapter_id.'.'.$topic->id.'.*');
-        Auth::user()->givePermissionTo($premission);
-
-        return redirect('/control-panel/forum');
-    }
-
-    public function forum_edittopic(Request $request)
-    {
-
-        $valid = $request->validate([
-            'id' => 'required',
-            'name' => 'required|min:3|max:25',
-            'ord' => 'required|digits_between:-999,999',
-        ]);
-
-        $topic = Topic::findOrFail($request->input('id'));
-
-        if(!Auth::user()->can('forum.'.$topic->chapter_id.'.'.$topic->id.'.edit'))
-        {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $topic->name = $request->input('name');
-        $topic->ord = $request->input('ord');
-        $topic->save();
-
-        return redirect('/control-panel/forum');
-    }
-
-    public function forum_deletetopic(Request $request)
-    {
-        $valid = $request->validate([
-            'id' => 'required',
-        ]);
-
-        $topic = Topic::findOrFail($request->input('id'));
-
-        if(!Auth::user()->can('forum.'.$topic->chapter_id.'.'.$topic->id.'.delete'))
-        {
-            abort(403, 'Unauthorized action.');
-        }
-
-        Comment::where('topic_id', $topic->id)->delete();
-        Post::where('topic_id', $topic->id)->delete();
-
-        Storage::disk('public')->deleteDirectory($this->path_files . $topic->chapter_id . '/' . $topic->id);
-
-        Permission::where('name', 'like', 'forum.'.$topic->chapter_id.'.'.$topic->id.'%')->delete();
-
-        $topic->delete();
-
-        return redirect('/control-panel/forum');
+        dd($request);
     }
 
 }
